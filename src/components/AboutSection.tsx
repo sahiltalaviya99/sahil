@@ -82,7 +82,7 @@ const AboutSection = () => {
               },
               {
                 delay: 0.3,
-                text: 'Currently pursuing my Bachelor\'s degree in Computer Science with a focus on web technologies and software engineering principles. My academic journey has equipped me with strong fundamentals in algorithms, data structures, and system design.',
+                text: 'Currently pursuing my Bachelor\'s degree in Information Technology with a focus on web technologies and software engineering principles. My academic journey has equipped me with strong fundamentals in algorithms, data structures, and system design.',
               },
               {
                 delay: 0.4,
