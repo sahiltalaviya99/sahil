@@ -14,6 +14,124 @@ type Project = {
   featured?: boolean;
 };
 
+// const projects: Project[] = [
+//   {
+//     id: 1,
+//     title: "Portfolio Website",
+//     description: "A fully responsive personal portfolio to highlight skills, experience, and projects.",
+//     detailedDescription: "Designed and developed a fully responsive personal portfolio to highlight skills, experience, and projects, featuring smooth transitions and a modern user interface with React and Tailwind CSS.",
+//     image: "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
+//     tags: ["React", "Tailwind CSS", "Framer Motion"],
+//     github: "https://github.com/sahiltalaviya99/portfolio",
+//     demo: "https://sahiltalaviya.netlify.app",
+//     featured: true,
+//   },
+//   {
+//     id: 2,
+//     title: "ForkFleet - Food Delivery App",
+//     description: "A user-friendly web application for browsing restaurant menus and placing food orders.",
+//     detailedDescription: "Built a user-friendly web application for browsing restaurant menus and placing food orders, ensuring responsiveness and performance across devices using React, Vite, and Tailwind CSS.",
+//     image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=1229&q=80",
+//     tags: ["React", "Vite", "Tailwind CSS"],
+//     github: "https://github.com/sahiltalaviya99/forkfleet",
+//     demo: "https://forkfleet.netlify.app",
+//     featured: false,
+//   },
+//   {
+//     id: 3,
+//     title: "Tic Tac Toe Game",
+//     description: "A classic Tic Tac Toe game implemented with HTML, CSS, and JavaScript.",
+//     detailedDescription: "Developed an interactive Tic Tac Toe game with a clean, modern interface using HTML, CSS, and JavaScript. Features include player vs player gameplay, score tracking, game reset functionality, and responsive design.",
+//     image: "https://images.unsplash.com/photo-1611996575749-79a3a250f948?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
+//     tags: ["HTML", "CSS", "JavaScript"],
+//     github: "https://github.com/sahiltalaviya99/tictactoe",
+//     demo: "https://sahil-tictactoe.netlify.app",
+//     featured: false,
+//   },
+//   {
+//     id: 4,
+//     title: "vDoctor - QA Testing",
+//     description: "Conducted comprehensive manual testing of the vDoctor telemedicine platform.",
+//     detailedDescription: "Conducted comprehensive manual testing of the vDoctor telemedicine platform on both web and mobile versions. Identified UI inconsistencies, bugs, and usability issues across user workflows and documented findings to support product improvement.",
+//     image: "https://images.unsplash.com/photo-1594904351111-a072f80b1a71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
+//     tags: ["Manual Testing", "QA", "UI Testing", "Documentation"],
+//     github: "https://github.com/sahiltalaviya99/qa-testing-samples",
+//     demo: "https://vdoctor.com",
+//     featured: false,
+//   },
+//   {
+//     id: 5,
+//     title: "Email Assistance for HR",
+//     description: "Automates HR email processing and applicant response via Joboo.",
+//     detailedDescription:
+//       "This agent monitors the HR inbox, categorizes emails, checks for relevant openings on Joboo, and sends automated replies encouraging candidates to apply directly via Joboo.",
+//     image: "https://media.istockphoto.com/id/1471466118/photo/e-mail-marketing-concept-business-man-use-a-laptop-computer-with-email-icons-in-work-space.jpg?s=612x612&w=0&k=20&c=op1dr_R5L2seNdDnSQCriD7SKgIGDlsYhjQ6fHrvsfA=",
+//     tags: ["n8n", "Email Automation", "Joboo API"],
+//     github: "", // Add if available
+//     demo: "",
+//     featured: false,
+//   },
+//   {
+//     id: 6,
+//     title: "HR Document Generator",
+//     description: "Generates standardized HR documents from templates.",
+//     detailedDescription:
+//       "Automates creation of Offer Letters, NDAs, Relieving, and Experience Letters using pre-defined templates. Integrated within HR workflows to speed up onboarding and offboarding processes.",
+//     image: "https://media.istockphoto.com/id/2189409732/photo/system-of-online-documentation-database-and-document-management-process-automation-to.jpg?s=612x612&w=0&k=20&c=LY9AFIsP8ABwTuSdcb4IIFw-5OWXqScp1t0PWwx-Fy0=",
+//     tags: ["n8n", "Automation", "Google Docs API", "Templating"],
+//     github: "",
+//     demo: "",
+//     featured: false,
+//   },
+//   {
+//     id: 7,
+//     title: "Probation Reminder Agent",
+//     description: "Sets Google Task reminders for probation end dates.",
+//     detailedDescription:
+//       "Agent checks employee start dates and schedules Google Task reminders for probation completion reviews. Streamlines HR follow-ups and reduces manual tracking.",
+//     image: "https://media.istockphoto.com/id/479097320/photo/laptop-with-resolution-adhesive-notes.jpg?s=612x612&w=0&k=20&c=1SWCRQkKB2lVmoCvYq8ZL_XHrZe356rgBlB57PCuZ-E=",
+//     tags: ["Google Tasks API", "n8n", "HR Automation"],
+//     github: "",
+//     demo: "",
+//     featured: false,
+//   },
+//   {
+//     id: 8,
+//     title: "Job Posting Agent",
+//     description: "Automates job post announcements and social sharing.",
+//     detailedDescription:
+//       "Triggered whenever a job is posted on Joboo. Sends email via Brevo, generates social media captions with hashtags, and forwards them to the design/social team for promotion.",
+//     image: "https://media.istockphoto.com/id/1498179921/photo/businesspeople-touching-on-screen-to-target-customer-target-customer-buyer-persona-customer.jpg?s=612x612&w=0&k=20&c=55wBSfTbscTrDGb2m5HXQKaa18cqaTTL8B92FqmcwKY=",
+//     tags: ["n8n", "Brevo API", "Joboo", "Social Automation"],
+//     github: "",
+//     demo: "",
+//     featured: false,
+//   },
+//   // {
+//   //   id: 9,
+//   //   title: "Image Generator Agent",
+//   //   description: "Creates contextual images based on prompts or templates.",
+//   //   detailedDescription:
+//   //     "Uses input text to generate visuals for documentation, presentations, or promotional use. Integrated with POC creation flows and Google Sheets for seamless feedback.",
+//   //   image: "https://images.unsplash.com/photo-1605902711622-cfb43c4437b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
+//   //   tags: ["AI", "Image Generation", "POC", "n8n"],
+//   //   github: "",
+//   //   demo: "",
+//   //   featured: false,
+//   // },
+//   {
+//     id: 10,
+//     title: "POC Image Generator",
+//     description: "Generates visual slides for proof-of-concept using data from sheets.",
+//     detailedDescription:
+//       "Automatically fills a Google Slides POC template using heading and description from a Google Sheet, generates visuals, and returns an image link back to the sheet.",
+//     image: "https://media.istockphoto.com/id/1385970223/photo/great-idea-of-a-marketing-strategy-plan-at-a-creative-office.jpg?s=612x612&w=0&k=20&c=6up_J8ekhYIbF3qiUEo9t28u8X-UrFNqwryyRhBl35w=", // You can host this on your own site or CDN
+//     tags: ["Google Slides API", "n8n", "Image Automation"],
+//     github: "",
+//     demo: "",
+//     featured: true,
+//   },
+// ];
 const projects: Project[] = [
   {
     id: 1,
@@ -39,17 +157,61 @@ const projects: Project[] = [
   },
   {
     id: 3,
-    title: "Tic Tac Toe Game",
-    description: "A classic Tic Tac Toe game implemented with HTML, CSS, and JavaScript.",
-    detailedDescription: "Developed an interactive Tic Tac Toe game with a clean, modern interface using HTML, CSS, and JavaScript. Features include player vs player gameplay, score tracking, game reset functionality, and responsive design.",
-    image: "https://images.unsplash.com/photo-1611996575749-79a3a250f948?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
-    tags: ["HTML", "CSS", "JavaScript"],
-    github: "https://github.com/sahiltalaviya99/tictactoe",
-    demo: "https://sahil-tictactoe.netlify.app",
-    featured: false,
+    title: "POC Image Generator",
+    description: "Generates visual slides for proof-of-concept using data from sheets.",
+    detailedDescription: "Automatically fills a Google Slides POC template using heading and description from a Google Sheet, generates visuals, and returns an image link back to the sheet.",
+    image: "https://media.istockphoto.com/id/1385970223/photo/great-idea-of-a-marketing-strategy-plan-at-a-creative-office.jpg?s=612x612&w=0&k=20&c=6up_J8ekhYIbF3qiUEo9t28u8X-UrFNqwryyRhBl35w=",
+    tags: ["Google Slides API", "n8n", "Image Automation"],
+    github: "",
+    demo: "",
+    featured: true,
   },
   {
     id: 4,
+    title: "HR Document Generator",
+    description: "Generates standardized HR documents from templates.",
+    detailedDescription: "Automates creation of Offer Letters, NDAs, Relieving, and Experience Letters using pre-defined templates. Integrated within HR workflows to speed up onboarding and offboarding processes.",
+    image: "https://media.istockphoto.com/id/2189409732/photo/system-of-online-documentation-database-and-document-management-process-automation-to.jpg?s=612x612&w=0&k=20&c=LY9AFIsP8ABwTuSdcb4IIFw-5OWXqScp1t0PWwx-Fy0=",
+    tags: ["n8n", "Automation", "Google Docs API", "Templating"],
+    github: "",
+    demo: "",
+    featured: false,
+  },
+  {
+    id: 10,
+    title: "Estimate & Invoice Generator",
+    description: "Generates client estimates and invoices using Zoho Books, triggered by Google Sheet data.",
+    detailedDescription: "Automatically takes client/project data from a Google Sheet and generates the first estimate via Zoho Books. If approved, it proceeds to create the invoice and sends it to the client, streamlining the billing workflow.",
+    image: "https://media.istockphoto.com/id/1059005782/photo/expense-cost-budget-and-tax-or-investment-calculation-black-pen-with-calculator-on-dark-black.jpg?s=612x612&w=0&k=20&c=wNnCylky40IaVMsiF6V0pFaLdqAbFIW385odxEsk-Uw=",
+    tags: ["n8n", "Zoho Books API", "Google Sheets", "Automation"],
+    github: "",
+    demo: "",
+    featured: false,
+  },
+  {
+    id: 5,
+    title: "Email Assistance for HR",
+    description: "Automates HR email processing and applicant response via Joboo.",
+    detailedDescription: "This agent monitors the HR inbox, categorizes emails, checks for relevant openings on Joboo, and sends automated replies encouraging candidates to apply directly via Joboo.",
+    image: "https://media.istockphoto.com/id/1471466118/photo/e-mail-marketing-concept-business-man-use-a-laptop-computer-with-email-icons-in-work-space.jpg?s=612x612&w=0&k=20&c=op1dr_R5L2seNdDnSQCriD7SKgIGDlsYhjQ6fHrvsfA=",
+    tags: ["n8n", "Email Automation", "Joboo API"],
+    github: "",
+    demo: "",
+    featured: false,
+  },
+  {
+    id: 6,
+    title: "Job Posting Agent",
+    description: "Automates job post announcements and social sharing.",
+    detailedDescription: "Triggered whenever a job is posted on Joboo. Sends email via Brevo, generates social media captions with hashtags, and forwards them to the design/social team for promotion.",
+    image: "https://media.istockphoto.com/id/1498179921/photo/businesspeople-touching-on-screen-to-target-customer-target-customer-buyer-persona-customer.jpg?s=612x612&w=0&k=20&c=55wBSfTbscTrDGb2m5HXQKaa18cqaTTL8B92FqmcwKY=",
+    tags: ["n8n", "Brevo API", "Joboo", "Social Automation"],
+    github: "",
+    demo: "",
+    featured: false,
+  },
+  {
+    id: 7,
     title: "vDoctor - QA Testing",
     description: "Conducted comprehensive manual testing of the vDoctor telemedicine platform.",
     detailedDescription: "Conducted comprehensive manual testing of the vDoctor telemedicine platform on both web and mobile versions. Identified UI inconsistencies, bugs, and usability issues across user workflows and documented findings to support product improvement.",
@@ -57,6 +219,28 @@ const projects: Project[] = [
     tags: ["Manual Testing", "QA", "UI Testing", "Documentation"],
     github: "https://github.com/sahiltalaviya99/qa-testing-samples",
     demo: "https://vdoctor.com",
+    featured: false,
+  },
+  {
+    id: 8,
+    title: "Probation Reminder Agent",
+    description: "Sets Google Task reminders for probation end dates.",
+    detailedDescription: "Agent checks employee start dates and schedules Google Task reminders for probation completion reviews. Streamlines HR follow-ups and reduces manual tracking.",
+    image: "https://media.istockphoto.com/id/479097320/photo/laptop-with-resolution-adhesive-notes.jpg?s=612x612&w=0&k=20&c=1SWCRQkKB2lVmoCvYq8ZL_XHrZe356rgBlB57PCuZ-E=",
+    tags: ["Google Tasks API", "n8n", "HR Automation"],
+    github: "",
+    demo: "",
+    featured: false,
+  },
+  {
+    id: 9,
+    title: "Tic Tac Toe Game",
+    description: "A classic Tic Tac Toe game implemented with HTML, CSS, and JavaScript.",
+    detailedDescription: "Developed an interactive Tic Tac Toe game with a clean, modern interface using HTML, CSS, and JavaScript. Features include player vs player gameplay, score tracking, game reset functionality, and responsive design.",
+    image: "https://images.unsplash.com/photo-1611996575749-79a3a250f948?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
+    tags: ["HTML", "CSS", "JavaScript"],
+    github: "https://github.com/sahiltalaviya99/tictactoe",
+    demo: "https://sahil-tictactoe.netlify.app",
     featured: false,
   },
 ];
@@ -141,7 +325,7 @@ const ProjectCard = memo(({ project, index, onClick }: {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
         
         {project.featured && (
           <div className="absolute top-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded-full shadow-sm">
