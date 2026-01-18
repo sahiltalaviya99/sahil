@@ -24,29 +24,26 @@ const skillsData = {
     { name: "C++", level: "Advanced", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" }
   ],
   tools: [
-    { name: "Git", level: "Advanced", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" },
+    { name: "Automation (n8n)", level: "Advanced", icon: "https://avatars.githubusercontent.com/u/45487711?s=200&v=4" },
+    // { name: "Git", level: "Advanced", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" },
     { name: "GitHub", level: "Advanced", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" },
     { name: "VS Code", level: "Expert", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" },
     { name: "Figma", level: "Intermediate", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg" }
   ],
   professional: [
-    { name: "Web Testing", level: "Intermediate", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/chrome/chrome-original.svg" },
+  
     { name: "Problem Solving", level: "Advanced", icon: "https://cdn-icons-png.flaticon.com/512/1015/1015676.png" },
-    { name: "Team Collaboration", level: "Advanced", icon: "https://cdn-icons-png.flaticon.com/512/2921/2921222.png" },
-    // { name: "Communication", level: "Advanced", icon: "https://cdn-icons-png.flaticon.com/512/2921/2921222.png" },
+    { name: "Team Collaboration", level: "Advanced", icon: "https://cdn-icons-png.flaticon.com/512/2921/2921222.png" }
+    // { name: "Communication", level: "Advanced", icon: "https://cdn-icons-png.flaticon.com/512/2921/2921222.png" }
   ],
   aiTools: [
     { name: "GitHub Copilot", level: "Intermediate", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" },
     { name: "Replit Ghostwriter", level: "Advanced", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/replit/replit-original.svg" },
     { name: "CodeSandbox AI", level: "Advanced", icon: "https://codesandbox.io/static/img/play-codesandbox.svg" },
-    { name: "ChatGPT", level: "Advanced", icon: "https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" },
-    // { name: "Cursor IDE (AI-Powered VS Code)", level: "Advanced", icon: "https://avatars.githubusercontent.com/u/122300437?s=200&v=4" },
-    // { name: "StackBlitz AI", level: "Intermediate", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/stackblitz/stackblitz-original.svg" },
-    // { name: "Phind (AI Search for Devs)", level: "Intermediate", icon: "https://phind.com/static/apple-touch-icon.png" },
-    // { name: "Tabnine", level: "Intermediate", icon: "https://static-00.iconduck.com/assets.00/tabnine-icon-512x512-8bq8tuxv.png" },
-    // { name: "Codeium", level: "Intermediate", icon: "https://avatars.githubusercontent.com/u/108250645?s=200&v=4" }
+    { name: "ChatGPT", level: "Advanced", icon: "https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" }
   ]
 };
+
 
 type Skill = {
   name: string;
