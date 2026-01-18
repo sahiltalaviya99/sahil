@@ -8,15 +8,23 @@ import { cn } from "@/lib/utils";
 
 const experiences = [
   {
-    title: "Frontend Developer Intern",
-    company: "iTechNotion Pvt Ltd",
-    period: "2025–Present",
-    description:
-      "Working on developing responsive web applications using React.js and related technologies. Collaborating with design teams to implement UI/UX designs.",
-    skills: ["React.js", "JavaScript", "Tailwind CSS", "Git"],
-    icon: "work",
-    highlight: true,
-  },
+  title: "Web Developer & Automation Expert",
+  company: "iTechNotion Pvt Ltd",
+  period: "2025–Present",
+  description:
+    "Developing and maintaining live, production-level web applications using React.js and Next.js, integrating APIs, and building automation workflows with n8n to streamline HR, sales, and marketing processes.",
+  skills: [
+    "React.js",
+    "Next.js",
+    "JavaScript",
+    "Tailwind CSS",
+    "Automation (n8n)",
+    "Git",
+    "GitHub"
+  ],
+  icon: "work",
+  highlight: true,
+},
   {
     title: "AI/ML Intern (15-day Bootcamp)",
     company: "IBM SkillBuild",
@@ -32,7 +40,7 @@ const experiences = [
     company: "GIT",
     period: "2021–2025",
     description:
-      "Currently pursuing my bachelor's degree with a focus on web technologies and software development.",
+      "Bachelor’s degree in Information Technology, with a focus on web technologies and software development.",
     skills: ["Algorithms", "Data Structures", "OOP", "Database Systems"],
     icon: "education",
     highlight: false,

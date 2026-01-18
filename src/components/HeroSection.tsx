@@ -95,7 +95,7 @@ const HeroSection = () => {
             Sahil Talaviya
           </motion.span>
           <motion.span
-            className="gradient-text text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl"
+            className="gradient-text text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
             animate={{
               backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
             }}
@@ -106,7 +106,7 @@ const HeroSection = () => {
               lineHeight: "1.2"
             }}
           >
-            Frontend Developer
+            Web Developer & Automation Expert
           </motion.span>
         </motion.h1>
 
@@ -114,8 +114,9 @@ const HeroSection = () => {
           variants={itemVariants}
           className="text-base sm:text-lg md:text-xl text-foreground/80 max-w-xs sm:max-w-md md:max-w-2xl mx-auto mb-6 sm:mb-8 md:mb-10"
         >
-          I build responsive, accessible, and performant web applications using
-          React, JavaScript, and modern frontend technologies.
+          I build responsive, performant web applications using React.js, Next.js,
+JavaScript, and modern frontend technologies, along with workflow automation using n8n.
+
         </motion.p>
 
         <motion.div

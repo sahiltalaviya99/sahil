@@ -77,16 +77,16 @@ const AboutSection = () => {
               {
                 delay: 0.2,
                 text: `Hello! I'm a `,
-                highlight: 'passionate Frontend Developer',
-                rest: ' with expertise in modern JavaScript frameworks like React.js. I specialize in creating responsive, performant web applications with clean, maintainable code using Tailwind CSS and styled-components.',
+                highlight: 'Web Developer & Automation Expert',
+                rest: ' with hands-on experience in building production-level web applications using React.js and Next.js. I specialize in developing responsive, API-integrated frontend solutions using Tailwind CSS and Bootstrap, along with scalable automation workflows using n8n.',
               },
               {
                 delay: 0.3,
-                text: 'Currently pursuing my Bachelor\'s degree in Information Technology with a focus on web technologies and software engineering principles. My academic journey has equipped me with strong fundamentals in algorithms, data structures, and system design.',
+                text: 'I hold a Bachelor’s degree in Information Technology and currently work on real-world projects, applying strong fundamentals in frontend development, programming concepts, and software engineering principles to solve practical business problems.',
               },
               {
                 delay: 0.4,
-                text: 'Beyond coding, I\'m passionate about UX design principles and accessibility. I believe in creating digital experiences that are not only visually appealing but also inclusive and user-friendly for everyone.',
+                text: 'Alongside frontend development, I build and manage automation workflows using n8n to streamline HR, sales, and marketing processes. I enjoy leveraging modern tools and AI-driven workflows to deliver efficient, scalable, and high-quality digital solutions.',
               },
             ].map((para, index) => (
               <motion.p
@@ -147,14 +147,14 @@ const AboutSection = () => {
               <div className="flex flex-col items-center justify-center p-6 sm:p-8 text-center">
                 <img
                   src="/my.png"
-                  alt="Frontend Developer"
+                  alt="Web Developer"
                   className="w-65 h-65 sm:w-32 sm:h-32 mb-4 object-cover rounded-full border-4 border-primary"
                 />
                 <h3 className="text-xl sm:text-2xl font-semibold text-white-800 dark:text-white">
-                  Frontend Developer
+                  Web Developer & Automation Expert
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm sm:text-base">
-                  React | Redux | Tailwind
+                  React | Next.js | n8n | Tailwind
                 </p>
               </div>
             </div>
