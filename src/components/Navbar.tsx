@@ -200,7 +200,7 @@ const Navbar = () => {
                 className="px-4 py-2 rounded-lg hover:bg-primary hover:text-primary-foreground transition-all duration-300"
               >
                 <a
-                  href="/resume.pdf"
+                  href="/Sahil Talaviya Resume.pdf"
                   download
                   target="_blank"
                   rel="noopener noreferrer"
@@ -348,7 +348,7 @@ const Navbar = () => {
                     asChild
                   >
                     <a
-                      href="/resume.pdf"
+                      href="/Sahil Talaviya Resume.pdf"
                       download
                       target="_blank"
                       rel="noopener noreferrer"

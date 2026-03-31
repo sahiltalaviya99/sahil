@@ -26,7 +26,7 @@ const socialLinks = [
   },
   {
     name: 'Resume',
-    href: '/resume.pdf',
+    href: '/Sahil Talaviya Resume.pdf',
     icon: FileText,
     ariaLabel: 'Download my resume',
     color: 'hover:text-green-400'
