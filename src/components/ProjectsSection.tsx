@@ -134,6 +134,66 @@ type Project = {
 // ];
 const projects: Project[] = [
   {
+    id: 11,
+    title: "Evolved Human Care",
+    description: "Doctor-patient consultation and appointment booking app with improved UX and real-time integrations.",
+    detailedDescription:
+      "Built and improved a doctor-patient online consultation and appointment booking application. Revamped UI based on Figma designs, improving user experience and design consistency. Integrated REST APIs, webhooks, and real-time notifications for seamless data flow. Optimized frontend performance to improve load time and responsiveness.",
+    image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
+    tags: ["Healthcare", "Appointment Booking", "REST API", "Webhooks", "Real-time Notifications"],
+    github: "",
+    demo: "https://evolvedhumancare.io",
+    featured: true,
+  },
+  {
+    id: 12,
+    title: "Wellnessta",
+    description: "Spa and salon booking platform with better stability, smarter search, and improved booking UX.",
+    detailedDescription:
+      "Worked on a spa and salon booking website. Resolved critical bugs, improving platform stability and reducing crash rates. Implemented debounced search to reduce API calls and improve performance. Enhanced booking features to improve user engagement and usability.",
+    image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
+    tags: ["Spa Booking", "Salon Booking", "Debounced Search", "Bug Fixing", "Performance"],
+    github: "",
+    demo: "https://wellnessta.com",
+    featured: false,
+  },
+  {
+    id: 13,
+    title: "InboxPlus - Email Automation Platform",
+    description: "Email automation platform with drag-and-drop workflows and optimized API/rendering performance.",
+    detailedDescription:
+      "Built an email automation platform with a drag-and-drop workflow builder (similar to n8n) and dynamic node functionality. Fixed complex bugs and reduced unnecessary API calls, improving system efficiency. Optimized rendering performance, reducing UI latency and improving responsiveness.",
+    image: "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
+    tags: ["Workflow Builder", "Drag and Drop", "Email Automation", "n8n-like", "Rendering Optimization"],
+    github: "",
+    demo: "https://inboxpl.us",
+    featured: true,
+  },
+  {
+    id: 15,
+    title: "Automation Workflows (n8n)",
+    description: "Designed and implemented automation workflows for HR, sales, and marketing operations.",
+    detailedDescription:
+      "Designed and implemented automation workflows for HR, sales, and marketing processes. Automated reporting and internal operations, saving time and reducing manual effort. Improved business efficiency through intelligent workflow automation.",
+    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
+    tags: ["n8n", "Workflow Automation", "HR", "Sales", "Marketing"],
+    github: "",
+    demo: "",
+    featured: true,
+  },
+  {
+    id: 14,
+    title: "Shreenathji Tech Showcase",
+    description: "A modern, responsive showcase website with clean UI/UX, smooth interactions, and strong performance.",
+    detailedDescription:
+      "Designed and developed a visually engaging and responsive showcase website. Focused on clean UI/UX, smooth interactions, and modern layout design. Ensured cross-device compatibility and optimized performance for fast loading. Implemented reusable and scalable frontend components.",
+    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
+    tags: ["HTML5", "CSS3", "JavaScript", "Responsive Design", "UI/UX"],
+    github: "",
+    demo: "https://shreenathji-tech-showcase.pages.dev/",
+    featured: false,
+  },
+  {
     id: 1,
     title: "Portfolio Website",
     description: "A fully responsive personal portfolio to highlight skills, experience, and projects.",
@@ -152,7 +212,7 @@ const projects: Project[] = [
     image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=1229&q=80",
     tags: ["React", "Vite", "Tailwind CSS"],
     github: "https://github.com/sahiltalaviya99/forkfleet",
-    demo: "https://forkfleet.netlify.app",
+    demo: "",
     featured: false,
   },
   {
@@ -218,7 +278,7 @@ const projects: Project[] = [
     image: "https://images.unsplash.com/photo-1594904351111-a072f80b1a71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
     tags: ["Manual Testing", "QA", "UI Testing", "Documentation"],
     github: "https://github.com/sahiltalaviya99/qa-testing-samples",
-    demo: "https://vdoctor.com",
+    demo: "https://vdoctor-frontend.itechnotion.dev/login",
     featured: false,
   },
   {
@@ -325,7 +385,8 @@ const ProjectCard = memo(({ project, index, onClick }: {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/90 to-transparent" />
         
         {project.featured && (
           <div className="absolute top-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded-full shadow-sm">
@@ -333,7 +394,10 @@ const ProjectCard = memo(({ project, index, onClick }: {
           </div>
         )}
 
-        <div className="absolute inset-0 flex flex-col justify-end p-3 sm:p-4 md:p-5 text-white">
+        <div
+          className="absolute inset-0 flex flex-col justify-end p-3 sm:p-4 md:p-5 text-white"
+          style={{ textShadow: '0 2px 10px rgba(0, 0, 0, 0.9)' }}
+        >
           <motion.h3 
             className="text-base sm:text-lg md:text-xl font-bold mb-1 tracking-wide line-clamp-2"
             initial={{ opacity: 0, y: 20 }}
@@ -387,6 +451,7 @@ const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => v
   const modalRef = useRef<HTMLDivElement>(null);
   const isMobile = useMobileDetect();
   const [imageLoaded, setImageLoaded] = useState(false);
+  const hasDemo = Boolean(project.demo && project.demo.trim().length > 0);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -426,7 +491,7 @@ const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => v
     >
       <motion.div 
         ref={modalRef}
-        className="bg-background/90 backdrop-blur-md w-full max-w-[90vw] sm:max-w-2xl lg:max-w-4xl max-h-[90vh] rounded-xl relative shadow-2xl border border-white/10 overflow-y-auto"
+        className="project-modal-scroll bg-background/90 backdrop-blur-md w-full max-w-[90vw] sm:max-w-2xl lg:max-w-4xl max-h-[90vh] rounded-xl relative shadow-2xl border border-white/10 overflow-y-auto"
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
@@ -482,29 +547,20 @@ const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => v
             {project.detailedDescription || project.description}
           </p>
           
-          {/* <div className="flex flex-wrap gap-2 sm:gap-3 lg:gap-4">
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 sm:gap-2 bg-primary text-white text-xs sm:text-sm md:text-base px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-primary/90 transition-all"
-              aria-label={`View ${project.title} source code on GitHub`}
-            >
-              <Github size={16} className="hover:rotate-12 transition-transform" />
-              <span>View Source</span>
-            </a>
-            
-            <a
-              href={project.demo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 sm:gap-2 bg-background/50 text-foreground text-xs sm:text-sm md:text-base px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-white/20 hover:border-white/30 hover:bg-background/70 transition-all"
-              aria-label={`View live demo of ${project.title}`}
-            >
-              <ExternalLink size={16} />
-              <span>Live Demo</span>
-            </a>
-          </div> */}
+          {hasDemo && (
+            <div className="flex flex-wrap gap-2 sm:gap-3 lg:gap-4">
+              <a
+                href={project.demo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 sm:gap-2 bg-background/50 text-foreground text-xs sm:text-sm md:text-base px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-white/20 hover:border-white/30 hover:bg-background/70 transition-all"
+                aria-label={`View live demo of ${project.title}`}
+              >
+                <ExternalLink size={16} />
+                <span>Live Demo</span>
+              </a>
+            </div>
+          )}
         </div>
 
         {/* <motion.button
@@ -599,7 +655,7 @@ const ProjectsSection = () => {
           <ProjectModal 
             project={selectedProject} 
             onClose={() => setSelectedProject(null)}
-          />
+          />  
         )}
       </AnimatePresence>
     </section>

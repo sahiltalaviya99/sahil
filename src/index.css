@@ -192,4 +192,14 @@
     left: 100%;
     transition: 0.5s;
   }
+
+  /* Themed scrollbar for project popup scroller */
+  .project-modal-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .project-modal-scroll::-webkit-scrollbar {
+    display: none;
+  }
 }
