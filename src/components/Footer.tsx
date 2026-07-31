@@ -1,232 +1,112 @@
-import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail, Phone, FileText } from 'lucide-react';
-import { useAppSelector } from '../hooks/redux';
+import { ArrowUp } from 'lucide-react';
 
-const socialLinks = [
-  {
-    name: 'GitHub',
-    href: 'https://github.com/sahiltalaviya99',
-    icon: Github,
-    ariaLabel: 'Explore my GitHub projects',
-    color: 'hover:text-purple-400'
-  },
-  {
-    name: 'LinkedIn',
-    href: 'https://linkedin.com/in/sahil-talaviya-99o9657o18',
-    icon: Linkedin,
-    ariaLabel: 'Connect with me on LinkedIn',
-    color: 'hover:text-blue-400'
-  },
-  {
-    name: 'Email',
-    href: 'mailto:sahiltalaviya9922@gmail.com',
-    icon: Mail,
-    ariaLabel: 'Send me an email',
-    color: 'hover:text-red-400'
-  },
-  {
-    name: 'Resume',
-    href: '/Sahil Talaviya Resume.pdf',
-    icon: FileText,
-    ariaLabel: 'Download my resume',
-    color: 'hover:text-green-400'
-  }
-];
+import { Reveal } from '@/components/motion/Reveal';
+import { Marquee } from '@/components/ui-kit/Marquee';
+import { SECTIONS, site, socials } from '@/content/site';
+import { useScrollToSection } from '@/hooks/use-section-nav';
 
 const Footer = () => {
-  const { theme } = useAppSelector((state) => state.theme);
-  const isDark = theme === 'dark';
-
-  const iconVariants = {
-    rest: { scale: 1 },
-    hover: {
-      scale: 1.2,
-      rotate: [0, -10, 10, 0],
-      transition: {
-        duration: 0.6,
-        type: 'spring',
-        stiffness: 300,
-        damping: 10
-      }
-    }
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: 'spring',
-        stiffness: 100,
-        damping: 10
-      }
-    }
-  };
+  const scrollTo = useScrollToSection();
+  const year = new Date().getFullYear();
 
   return (
-    <motion.footer
-      className={`relative overflow-hidden border-t ${
-        isDark ? 'border-white/10' : 'border-black/10'
-      } py-12 px-4 sm:px-6 lg:px-8 bg-background/95 backdrop-blur-sm`}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
-      variants={containerVariants}
-    >
-      {/* Animated background elements */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        {[...Array(12)].map((_, i) => (
-          <motion.div
-            key={i}
-            className={`absolute rounded-full ${
-              isDark ? 'bg-primary/10' : 'bg-primary/5'
-            }`}
-            style={{
-              width: Math.random() * 120 + 30,
-              height: Math.random() * 120 + 30,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              x: [0, Math.random() * 100 - 50],
-              y: [0, Math.random() * 100 - 50],
-              opacity: [0.7, 0.9, 0.7],
-            }}
-            transition={{
-              duration: Math.random() * 15 + 10,
-              repeat: Infinity,
-              repeatType: "reverse",
-              ease: "easeInOut"
-            }}
-          />
-        ))}
-      </div>
+    <footer className="relative border-t border-border/70">
+      {/* Oversized name as a slow marquee — the site's sign-off. */}
+      <Reveal variant="fade">
+        <div className="overflow-hidden py-10 sm:py-14">
+          <Marquee duration={38} pauseOnHover={false} itemClassName="gap-10 px-5">
+            {[0, 1, 2].map((i) => (
+              <span
+                key={i}
+                className="flex shrink-0 items-center gap-10 whitespace-nowrap font-display text-[clamp(2.5rem,9vw,7rem)] font-bold uppercase tracking-tight text-foreground/[0.07]"
+              >
+                {site.name}
+                <span className="h-2 w-2 shrink-0 rounded-full bg-primary/40" aria-hidden />
+              </span>
+            ))}
+          </Marquee>
+        </div>
+      </Reveal>
 
-      <div className="container mx-auto max-w-7xl">
-        {/* Contact section */}
-        <motion.div 
-          className="text-center mb-12"
-          variants={itemVariants}
-        >
-          <motion.h2 
-            className="text-3xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary mb-4"
-            initial={{ opacity: 0, y: -20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            Transforming Ideas into Scalable AI-Driven Products.
-          </motion.h2>
-          {/* <motion.p
-            className={`max-w-2xl mx-auto text-lg ${
-              isDark ? 'text-foreground/80' : 'text-foreground/70'
-            }`}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            I'm currently looking for new opportunities. Whether you have a question or just want to say hi, I'll do my best to get back to you!
-          </motion.p> */}
-          <motion.p
-  className={`max-w-2xl mx-auto text-lg ${
-    isDark ? 'text-foreground/80' : 'text-foreground/70'
-  }`}
-  initial={{ opacity: 0 }}
-  whileInView={{ opacity: 1 }}
-  transition={{ delay: 0.2 }}
-  viewport={{ once: true }}
->
-  I am currently open to new professional opportunities. Please feel free to contact me with any inquiries or collaboration proposals, and I will respond promptly.
-</motion.p>
-
-        </motion.div>
-
-        {/* Social links */}
-        <motion.div 
-          className="flex justify-center gap-4 sm:gap-6 mb-12"
-          variants={containerVariants}
-        >
-          {socialLinks.map((link) => (
-            <motion.a
-              key={link.name}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={link.ariaLabel}
-              className={`p-3 rounded-full ${
-                isDark ? 'bg-white/5' : 'bg-black/5'
-              } ${link.color} transition-all duration-300`}
-              variants={itemVariants}
-              whileHover="hover"
-              whileTap={{ scale: 0.9 }}
-              initial="hidden"
-              animate="visible"
+      <div className="section-shell pb-10">
+        <div className="grid gap-10 border-t border-border/70 pt-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
+          {/* Pitch */}
+          <div className="min-w-0">
+            <p className="max-w-sm font-display text-lg font-semibold leading-snug tracking-tight">
+              Available for full-stack, ERP and AI automation work.
+            </p>
+            <a
+              href={`mailto:${site.email}`}
+              className="mt-3 inline-block text-sm text-primary transition-opacity hover:opacity-80"
+              style={{ overflowWrap: 'anywhere' }}
             >
-              <motion.div variants={iconVariants}>
-                <link.icon className="w-6 h-6" />
-              </motion.div>
-            </motion.a>
-          ))}
-        </motion.div>
+              {site.email}
+            </a>
+            <p className="mt-1 text-sm text-muted-foreground">{site.location}</p>
+          </div>
 
-        {/* Contact info */}
-        {/* <motion.div 
-          className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 mb-12"
-          variants={itemVariants}
-        >
-          <a 
-            href="mailto:sahiltalaviya9922@gmail.com" 
-            className={`flex items-center gap-2 ${
-              isDark ? 'text-foreground/80 hover:text-primary' : 'text-foreground/70 hover:text-secondary'
-            } transition-colors`}
-          >
-            <Mail className="w-5 h-5" />
-            <span>sahiltalaviya9922@gmail.com</span>
-          </a>
-          <a 
-            href="tel:+919999999999" 
-            className={`flex items-center gap-2 ${
-              isDark ? 'text-foreground/80 hover:text-primary' : 'text-foreground/70 hover:text-secondary'
-            } transition-colors`}
-          >
-            <Phone className="w-5 h-5" />
-            <span>+91 9909657018</span>
-          </a>
-        </motion.div> */}
+          {/* Sitemap — same SECTIONS array the navbar uses. */}
+          <nav aria-label="Footer">
+            <h2 className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-muted-foreground/70">
+              Navigate
+            </h2>
+            <ul className="mt-4 space-y-2.5">
+              {SECTIONS.map((s) => (
+                <li key={s.id}>
+                  <button
+                    onClick={() => scrollTo(s.id)}
+                    className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                  >
+                    {s.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-        {/* Copyright */}
-        <motion.div 
-          className={`pt-6 border-t ${
-            isDark ? 'border-white/10' : 'border-black/10'
-          } text-center`}
-          variants={itemVariants}
-        >
-          <p className={`text-sm ${
-            isDark ? 'text-foreground/70' : 'text-foreground/60'
-          }`}>
-            © {new Date().getFullYear()} Sahil Talaviya. All rights reserved.
+          {/* Elsewhere */}
+          <div>
+            <h2 className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-muted-foreground/70">
+              Elsewhere
+            </h2>
+            <ul className="mt-4 space-y-2.5">
+              {socials.map((s) => (
+                <li key={s.name}>
+                  <a
+                    href={s.href}
+                    target={s.download ? undefined : '_blank'}
+                    rel="noopener noreferrer"
+                    download={s.download}
+                    className="group inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
+                  >
+                    <s.icon className="h-3.5 w-3.5" />
+                    {s.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-border/70 pt-6">
+          <p className="font-mono text-xs text-muted-foreground">
+            © {year} {site.name}
           </p>
-          <p className={`text-xs mt-2 ${
-            isDark ? 'text-foreground/50' : 'text-foreground/40'
-          }`}>
-            Built with React, TypeScript, and Tailwind CSS
+
+          <p className="font-mono text-xs text-muted-foreground/70">
+            React · TypeScript · Tailwind · Framer Motion · Lenis
           </p>
-        </motion.div>
+
+          <button
+            onClick={() => scrollTo('home')}
+            className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground transition-colors hover:text-primary"
+          >
+            Back to top
+            <ArrowUp className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5" />
+          </button>
+        </div>
       </div>
-    </motion.footer>
+    </footer>
   );
 };
 

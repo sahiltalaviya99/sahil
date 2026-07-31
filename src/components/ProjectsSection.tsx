@@ -1,663 +1,430 @@
-import { useState, useRef, useEffect, memo } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { Github, ExternalLink, X, ArrowUp } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { ArrowUpRight, ChevronDown, ExternalLink, Plus } from 'lucide-react';
 
-type Project = {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  tags: string[];
-  github: string;
-  demo: string;
-  detailedDescription?: string;
-  featured?: boolean;
-};
+import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
+import { SectionHeading } from '@/components/ui-kit/SectionHeading';
+import { Monogram } from '@/components/ui-kit/Monogram';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  earlierWork,
+  projectFilters,
+  projects,
+  statusLabel,
+  type Project,
+  type ProjectFilter,
+} from '@/content/projects';
+import { cn } from '@/lib/utils';
+import { easeOutExpo } from '@/lib/motion';
 
-// const projects: Project[] = [
-//   {
-//     id: 1,
-//     title: "Portfolio Website",
-//     description: "A fully responsive personal portfolio to highlight skills, experience, and projects.",
-//     detailedDescription: "Designed and developed a fully responsive personal portfolio to highlight skills, experience, and projects, featuring smooth transitions and a modern user interface with React and Tailwind CSS.",
-//     image: "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
-//     tags: ["React", "Tailwind CSS", "Framer Motion"],
-//     github: "https://github.com/sahiltalaviya99/portfolio",
-//     demo: "https://sahiltalaviya.netlify.app",
-//     featured: true,
-//   },
-//   {
-//     id: 2,
-//     title: "ForkFleet - Food Delivery App",
-//     description: "A user-friendly web application for browsing restaurant menus and placing food orders.",
-//     detailedDescription: "Built a user-friendly web application for browsing restaurant menus and placing food orders, ensuring responsiveness and performance across devices using React, Vite, and Tailwind CSS.",
-//     image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=1229&q=80",
-//     tags: ["React", "Vite", "Tailwind CSS"],
-//     github: "https://github.com/sahiltalaviya99/forkfleet",
-//     demo: "https://forkfleet.netlify.app",
-//     featured: false,
-//   },
-//   {
-//     id: 3,
-//     title: "Tic Tac Toe Game",
-//     description: "A classic Tic Tac Toe game implemented with HTML, CSS, and JavaScript.",
-//     detailedDescription: "Developed an interactive Tic Tac Toe game with a clean, modern interface using HTML, CSS, and JavaScript. Features include player vs player gameplay, score tracking, game reset functionality, and responsive design.",
-//     image: "https://images.unsplash.com/photo-1611996575749-79a3a250f948?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
-//     tags: ["HTML", "CSS", "JavaScript"],
-//     github: "https://github.com/sahiltalaviya99/tictactoe",
-//     demo: "https://sahil-tictactoe.netlify.app",
-//     featured: false,
-//   },
-//   {
-//     id: 4,
-//     title: "vDoctor - QA Testing",
-//     description: "Conducted comprehensive manual testing of the vDoctor telemedicine platform.",
-//     detailedDescription: "Conducted comprehensive manual testing of the vDoctor telemedicine platform on both web and mobile versions. Identified UI inconsistencies, bugs, and usability issues across user workflows and documented findings to support product improvement.",
-//     image: "https://images.unsplash.com/photo-1594904351111-a072f80b1a71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
-//     tags: ["Manual Testing", "QA", "UI Testing", "Documentation"],
-//     github: "https://github.com/sahiltalaviya99/qa-testing-samples",
-//     demo: "https://vdoctor.com",
-//     featured: false,
-//   },
-//   {
-//     id: 5,
-//     title: "Email Assistance for HR",
-//     description: "Automates HR email processing and applicant response via Joboo.",
-//     detailedDescription:
-//       "This agent monitors the HR inbox, categorizes emails, checks for relevant openings on Joboo, and sends automated replies encouraging candidates to apply directly via Joboo.",
-//     image: "https://media.istockphoto.com/id/1471466118/photo/e-mail-marketing-concept-business-man-use-a-laptop-computer-with-email-icons-in-work-space.jpg?s=612x612&w=0&k=20&c=op1dr_R5L2seNdDnSQCriD7SKgIGDlsYhjQ6fHrvsfA=",
-//     tags: ["n8n", "Email Automation", "Joboo API"],
-//     github: "", // Add if available
-//     demo: "",
-//     featured: false,
-//   },
-//   {
-//     id: 6,
-//     title: "HR Document Generator",
-//     description: "Generates standardized HR documents from templates.",
-//     detailedDescription:
-//       "Automates creation of Offer Letters, NDAs, Relieving, and Experience Letters using pre-defined templates. Integrated within HR workflows to speed up onboarding and offboarding processes.",
-//     image: "https://media.istockphoto.com/id/2189409732/photo/system-of-online-documentation-database-and-document-management-process-automation-to.jpg?s=612x612&w=0&k=20&c=LY9AFIsP8ABwTuSdcb4IIFw-5OWXqScp1t0PWwx-Fy0=",
-//     tags: ["n8n", "Automation", "Google Docs API", "Templating"],
-//     github: "",
-//     demo: "",
-//     featured: false,
-//   },
-//   {
-//     id: 7,
-//     title: "Probation Reminder Agent",
-//     description: "Sets Google Task reminders for probation end dates.",
-//     detailedDescription:
-//       "Agent checks employee start dates and schedules Google Task reminders for probation completion reviews. Streamlines HR follow-ups and reduces manual tracking.",
-//     image: "https://media.istockphoto.com/id/479097320/photo/laptop-with-resolution-adhesive-notes.jpg?s=612x612&w=0&k=20&c=1SWCRQkKB2lVmoCvYq8ZL_XHrZe356rgBlB57PCuZ-E=",
-//     tags: ["Google Tasks API", "n8n", "HR Automation"],
-//     github: "",
-//     demo: "",
-//     featured: false,
-//   },
-//   {
-//     id: 8,
-//     title: "Job Posting Agent",
-//     description: "Automates job post announcements and social sharing.",
-//     detailedDescription:
-//       "Triggered whenever a job is posted on Joboo. Sends email via Brevo, generates social media captions with hashtags, and forwards them to the design/social team for promotion.",
-//     image: "https://media.istockphoto.com/id/1498179921/photo/businesspeople-touching-on-screen-to-target-customer-target-customer-buyer-persona-customer.jpg?s=612x612&w=0&k=20&c=55wBSfTbscTrDGb2m5HXQKaa18cqaTTL8B92FqmcwKY=",
-//     tags: ["n8n", "Brevo API", "Joboo", "Social Automation"],
-//     github: "",
-//     demo: "",
-//     featured: false,
-//   },
-//   // {
-//   //   id: 9,
-//   //   title: "Image Generator Agent",
-//   //   description: "Creates contextual images based on prompts or templates.",
-//   //   detailedDescription:
-//   //     "Uses input text to generate visuals for documentation, presentations, or promotional use. Integrated with POC creation flows and Google Sheets for seamless feedback.",
-//   //   image: "https://images.unsplash.com/photo-1605902711622-cfb43c4437b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
-//   //   tags: ["AI", "Image Generation", "POC", "n8n"],
-//   //   github: "",
-//   //   demo: "",
-//   //   featured: false,
-//   // },
-//   {
-//     id: 10,
-//     title: "POC Image Generator",
-//     description: "Generates visual slides for proof-of-concept using data from sheets.",
-//     detailedDescription:
-//       "Automatically fills a Google Slides POC template using heading and description from a Google Sheet, generates visuals, and returns an image link back to the sheet.",
-//     image: "https://media.istockphoto.com/id/1385970223/photo/great-idea-of-a-marketing-strategy-plan-at-a-creative-office.jpg?s=612x612&w=0&k=20&c=6up_J8ekhYIbF3qiUEo9t28u8X-UrFNqwryyRhBl35w=", // You can host this on your own site or CDN
-//     tags: ["Google Slides API", "n8n", "Image Automation"],
-//     github: "",
-//     demo: "",
-//     featured: true,
-//   },
-// ];
-const projects: Project[] = [
-  {
-    id: 11,
-    title: "Evolved Human Care",
-    description: "Doctor-patient consultation and appointment booking app with improved UX and real-time integrations.",
-    detailedDescription:
-      "Built and improved a doctor-patient online consultation and appointment booking application. Revamped UI based on Figma designs, improving user experience and design consistency. Integrated REST APIs, webhooks, and real-time notifications for seamless data flow. Optimized frontend performance to improve load time and responsiveness.",
-    image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
-    tags: ["Healthcare", "Appointment Booking", "REST API", "Webhooks", "Real-time Notifications"],
-    github: "",
-    demo: "https://evolvedhumancare.io",
-    featured: true,
-  },
-  {
-    id: 12,
-    title: "Wellnessta",
-    description: "Spa and salon booking platform with better stability, smarter search, and improved booking UX.",
-    detailedDescription:
-      "Worked on a spa and salon booking website. Resolved critical bugs, improving platform stability and reducing crash rates. Implemented debounced search to reduce API calls and improve performance. Enhanced booking features to improve user engagement and usability.",
-    image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
-    tags: ["Spa Booking", "Salon Booking", "Debounced Search", "Bug Fixing", "Performance"],
-    github: "",
-    demo: "https://wellnessta.com",
-    featured: false,
-  },
-  {
-    id: 13,
-    title: "InboxPlus - Email Automation Platform",
-    description: "Email automation platform with drag-and-drop workflows and optimized API/rendering performance.",
-    detailedDescription:
-      "Built an email automation platform with a drag-and-drop workflow builder (similar to n8n) and dynamic node functionality. Fixed complex bugs and reduced unnecessary API calls, improving system efficiency. Optimized rendering performance, reducing UI latency and improving responsiveness.",
-    image: "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
-    tags: ["Workflow Builder", "Drag and Drop", "Email Automation", "n8n-like", "Rendering Optimization"],
-    github: "",
-    demo: "https://inboxpl.us",
-    featured: true,
-  },
-  {
-    id: 15,
-    title: "Automation Workflows (n8n)",
-    description: "Designed and implemented automation workflows for HR, sales, and marketing operations.",
-    detailedDescription:
-      "Designed and implemented automation workflows for HR, sales, and marketing processes. Automated reporting and internal operations, saving time and reducing manual effort. Improved business efficiency through intelligent workflow automation.",
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
-    tags: ["n8n", "Workflow Automation", "HR", "Sales", "Marketing"],
-    github: "",
-    demo: "",
-    featured: true,
-  },
-  {
-    id: 14,
-    title: "Shreenathji Tech Showcase",
-    description: "A modern, responsive showcase website with clean UI/UX, smooth interactions, and strong performance.",
-    detailedDescription:
-      "Designed and developed a visually engaging and responsive showcase website. Focused on clean UI/UX, smooth interactions, and modern layout design. Ensured cross-device compatibility and optimized performance for fast loading. Implemented reusable and scalable frontend components.",
-    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
-    tags: ["HTML5", "CSS3", "JavaScript", "Responsive Design", "UI/UX"],
-    github: "",
-    demo: "https://shreenathji-tech-showcase.pages.dev/",
-    featured: false,
-  },
-  {
-    id: 1,
-    title: "Portfolio Website",
-    description: "A fully responsive personal portfolio to highlight skills, experience, and projects.",
-    detailedDescription: "Designed and developed a fully responsive personal portfolio to highlight skills, experience, and projects, featuring smooth transitions and a modern user interface with React and Tailwind CSS.",
-    image: "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
-    tags: ["React", "Tailwind CSS", "Framer Motion"],
-    github: "https://github.com/sahiltalaviya99/portfolio",
-    demo: "https://sahiltalaviya.netlify.app",
-    featured: true,
-  },
-  {
-    id: 2,
-    title: "ForkFleet - Food Delivery App",
-    description: "A user-friendly web application for browsing restaurant menus and placing food orders.",
-    detailedDescription: "Built a user-friendly web application for browsing restaurant menus and placing food orders, ensuring responsiveness and performance across devices using React, Vite, and Tailwind CSS.",
-    image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=1229&q=80",
-    tags: ["React", "Vite", "Tailwind CSS"],
-    github: "https://github.com/sahiltalaviya99/forkfleet",
-    demo: "",
-    featured: false,
-  },
-  {
-    id: 3,
-    title: "POC Image Generator",
-    description: "Generates visual slides for proof-of-concept using data from sheets.",
-    detailedDescription: "Automatically fills a Google Slides POC template using heading and description from a Google Sheet, generates visuals, and returns an image link back to the sheet.",
-    image: "https://media.istockphoto.com/id/1385970223/photo/great-idea-of-a-marketing-strategy-plan-at-a-creative-office.jpg?s=612x612&w=0&k=20&c=6up_J8ekhYIbF3qiUEo9t28u8X-UrFNqwryyRhBl35w=",
-    tags: ["Google Slides API", "n8n", "Image Automation"],
-    github: "",
-    demo: "",
-    featured: true,
-  },
-  {
-    id: 4,
-    title: "HR Document Generator",
-    description: "Generates standardized HR documents from templates.",
-    detailedDescription: "Automates creation of Offer Letters, NDAs, Relieving, and Experience Letters using pre-defined templates. Integrated within HR workflows to speed up onboarding and offboarding processes.",
-    image: "https://media.istockphoto.com/id/2189409732/photo/system-of-online-documentation-database-and-document-management-process-automation-to.jpg?s=612x612&w=0&k=20&c=LY9AFIsP8ABwTuSdcb4IIFw-5OWXqScp1t0PWwx-Fy0=",
-    tags: ["n8n", "Automation", "Google Docs API", "Templating"],
-    github: "",
-    demo: "",
-    featured: false,
-  },
-  {
-    id: 10,
-    title: "Estimate & Invoice Generator",
-    description: "Generates client estimates and invoices using Zoho Books, triggered by Google Sheet data.",
-    detailedDescription: "Automatically takes client/project data from a Google Sheet and generates the first estimate via Zoho Books. If approved, it proceeds to create the invoice and sends it to the client, streamlining the billing workflow.",
-    image: "https://media.istockphoto.com/id/1059005782/photo/expense-cost-budget-and-tax-or-investment-calculation-black-pen-with-calculator-on-dark-black.jpg?s=612x612&w=0&k=20&c=wNnCylky40IaVMsiF6V0pFaLdqAbFIW385odxEsk-Uw=",
-    tags: ["n8n", "Zoho Books API", "Google Sheets", "Automation"],
-    github: "",
-    demo: "",
-    featured: false,
-  },
-  {
-    id: 5,
-    title: "Email Assistance for HR",
-    description: "Automates HR email processing and applicant response via Joboo.",
-    detailedDescription: "This agent monitors the HR inbox, categorizes emails, checks for relevant openings on Joboo, and sends automated replies encouraging candidates to apply directly via Joboo.",
-    image: "https://media.istockphoto.com/id/1471466118/photo/e-mail-marketing-concept-business-man-use-a-laptop-computer-with-email-icons-in-work-space.jpg?s=612x612&w=0&k=20&c=op1dr_R5L2seNdDnSQCriD7SKgIGDlsYhjQ6fHrvsfA=",
-    tags: ["n8n", "Email Automation", "Joboo API"],
-    github: "",
-    demo: "",
-    featured: false,
-  },
-  {
-    id: 6,
-    title: "Job Posting Agent",
-    description: "Automates job post announcements and social sharing.",
-    detailedDescription: "Triggered whenever a job is posted on Joboo. Sends email via Brevo, generates social media captions with hashtags, and forwards them to the design/social team for promotion.",
-    image: "https://media.istockphoto.com/id/1498179921/photo/businesspeople-touching-on-screen-to-target-customer-target-customer-buyer-persona-customer.jpg?s=612x612&w=0&k=20&c=55wBSfTbscTrDGb2m5HXQKaa18cqaTTL8B92FqmcwKY=",
-    tags: ["n8n", "Brevo API", "Joboo", "Social Automation"],
-    github: "",
-    demo: "",
-    featured: false,
-  },
-  {
-    id: 7,
-    title: "vDoctor - QA Testing",
-    description: "Conducted comprehensive manual testing of the vDoctor telemedicine platform.",
-    detailedDescription: "Conducted comprehensive manual testing of the vDoctor telemedicine platform on both web and mobile versions. Identified UI inconsistencies, bugs, and usability issues across user workflows and documented findings to support product improvement.",
-    image: "https://images.unsplash.com/photo-1594904351111-a072f80b1a71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
-    tags: ["Manual Testing", "QA", "UI Testing", "Documentation"],
-    github: "https://github.com/sahiltalaviya99/qa-testing-samples",
-    demo: "https://vdoctor-frontend.itechnotion.dev/login",
-    featured: false,
-  },
-  {
-    id: 8,
-    title: "Probation Reminder Agent",
-    description: "Sets Google Task reminders for probation end dates.",
-    detailedDescription: "Agent checks employee start dates and schedules Google Task reminders for probation completion reviews. Streamlines HR follow-ups and reduces manual tracking.",
-    image: "https://media.istockphoto.com/id/479097320/photo/laptop-with-resolution-adhesive-notes.jpg?s=612x612&w=0&k=20&c=1SWCRQkKB2lVmoCvYq8ZL_XHrZe356rgBlB57PCuZ-E=",
-    tags: ["Google Tasks API", "n8n", "HR Automation"],
-    github: "",
-    demo: "",
-    featured: false,
-  },
-  {
-    id: 9,
-    title: "Tic Tac Toe Game",
-    description: "A classic Tic Tac Toe game implemented with HTML, CSS, and JavaScript.",
-    detailedDescription: "Developed an interactive Tic Tac Toe game with a clean, modern interface using HTML, CSS, and JavaScript. Features include player vs player gameplay, score tracking, game reset functionality, and responsive design.",
-    image: "https://images.unsplash.com/photo-1611996575749-79a3a250f948?ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80",
-    tags: ["HTML", "CSS", "JavaScript"],
-    github: "https://github.com/sahiltalaviya99/tictactoe",
-    demo: "https://sahil-tictactoe.netlify.app",
-    featured: false,
-  },
-];
+const featured = projects.filter((p) => p.featured);
+const rest = projects.filter((p) => !p.featured);
 
-const useMobileDetect = () => {
-  const [isMobile, setIsMobile] = useState(false);
+/** How many of the remaining projects show before "view all". */
+const PREVIEW_COUNT = 6;
 
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+/** Small status pill. Live work says so; internal systems say that too. */
+const StatusPill = ({ status }: { status: Project['status'] }) => (
+  <span
+    className={cn(
+      'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[0.6rem] uppercase tracking-[0.14em]',
+      status === 'live'
+        ? 'border-primary/30 bg-primary/10 text-primary'
+        : 'border-border bg-elevated text-muted-foreground',
+    )}
+  >
+    <span
+      className={cn(
+        'h-1.5 w-1.5 rounded-full',
+        status === 'live' ? 'bg-primary' : 'bg-muted-foreground/60',
+      )}
+    />
+    {statusLabel[status]}
+  </span>
+);
 
-  return isMobile;
-};
+/* -------------------------------------------------------------------------- */
+/*  Featured — sticky stacking cards                                           */
+/* -------------------------------------------------------------------------- */
 
-const ProjectCard = memo(({ project, index, onClick }: { 
-  project: Project; 
-  index: number; 
-  onClick: () => void;
+/**
+ * Each card sticks below the nav at a slightly deeper offset than the last, so
+ * they physically stack as you scroll and the one beneath shrinks away.
+ *
+ * Built on CSS `position: sticky` rather than GSAP pinning — no pin-spacer
+ * maths, nothing to recalculate on resize, and it degrades to plain stacked
+ * cards below `lg` where the effect would just eat vertical space.
+ */
+const StackCard = ({
+  project,
+  index,
+  total,
+  onOpen,
+}: {
+  project: Project;
+  index: number;
+  total: number;
+  onOpen: () => void;
 }) => {
-  const [hovered, setHovered] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const isMobile = useMobileDetect();
+  const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current || isMobile) return;
-    const card = cardRef.current;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const rotateX = (y - centerY) / 15;
-    const rotateY = (centerX - x) / 15;
-    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`;
-  };
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start 12%', 'end start'],
+  });
 
-  const handleMouseLeave = () => {
-    if (!cardRef.current) return;
-    cardRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-    setHovered(false);
-  };
-
-  const handleTouch = () => {
-    if (isMobile) setHovered(!hovered);
-  };
+  // Cards shrink and dim slightly as the next one slides over them.
+  const scale = useTransform(scrollYProgress, [0, 1], [1, reduce ? 1 : 0.92]);
+  const opacity = useTransform(scrollYProgress, [0, 0.85], [1, reduce ? 1 : 0.35]);
 
   return (
-    <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
-      viewport={{ once: true, margin: "-50px" }}
-      className="relative w-full h-full cursor-pointer"
-      onMouseEnter={() => !isMobile && setHovered(true)}
-      onMouseLeave={handleMouseLeave}
-      onMouseMove={handleMouseMove}
-      onClick={() => {
-        handleTouch();
-        onClick();
-      }}
-      whileHover={!isMobile ? { scale: 1.03 } : {}}
-      whileTap={isMobile ? { scale: 0.97 } : {}}
-      style={{ 
-        transition: "box-shadow 0.3s ease",
-        boxShadow: hovered ? '0 12px 30px -5px rgba(0, 0, 0, 0.15), 0 8px 12px -6px rgba(0, 0, 0, 0.1)' : '0 4px 10px -2px rgba(0, 0, 0, 0.1)',
-      }}
-      role="button"
-      aria-label={`View details for ${project.title}`}
+    <div
+      ref={ref}
+      className="lg:sticky"
+      style={{ top: `calc(var(--nav-h) + 2rem + ${index * 1.1}rem)` }}
     >
-      <div className="relative overflow-hidden rounded-xl aspect-[4/3] bg-background/50">
-        <motion.div 
-          className="absolute inset-0 bg-cover bg-center transition-transform duration-500"
-          style={{ 
-            backgroundImage: `url(${project.image})`,
-            transform: hovered ? 'scale(1.08)' : 'scale(1)',
-          }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/90 to-transparent" />
-        
-        {project.featured && (
-          <div className="absolute top-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded-full shadow-sm">
-            Featured
-          </div>
-        )}
-
-        <div
-          className="absolute inset-0 flex flex-col justify-end p-3 sm:p-4 md:p-5 text-white"
-          style={{ textShadow: '0 2px 10px rgba(0, 0, 0, 0.9)' }}
-        >
-          <motion.h3 
-            className="text-base sm:text-lg md:text-xl font-bold mb-1 tracking-wide line-clamp-2"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-          >
-            {project.title}
-          </motion.h3>
-          
-          <motion.p 
-            className="text-xs sm:text-sm md:text-base text-white/80 mb-2 line-clamp-2"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            {project.description}
-          </motion.p>
-          
-          <motion.div
-            className="flex flex-wrap gap-1 sm:gap-1.5"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            viewport={{ once: true }}
-          >
-            {project.tags.slice(0, isMobile ? 2 : 3).map((tag) => (
-              <span 
-                key={tag} 
-                className="bg-primary/40 text-white text-xs px-1.5 sm:px-2 py-0.5 rounded-full backdrop-blur-sm"
-              >
-                {tag}
-              </span>
-            ))}
-            {project.tags.length > (isMobile ? 2 : 3) && (
-              <span className="bg-primary/40 text-white text-xs px-1.5 sm:px-2 py-0.5 rounded-full backdrop-blur-sm">
-                +{project.tags.length - (isMobile ? 2 : 3)}
-              </span>
-            )}
-          </motion.div>
-        </div>
-      </div>
-    </motion.div>
-  );
-});
-
-ProjectCard.displayName = 'ProjectCard';
-
-const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => void }) => {
-  const modalRef = useRef<HTMLDivElement>(null);
-  const isMobile = useMobileDetect();
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const hasDemo = Boolean(project.demo && project.demo.trim().length > 0);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        onClose();
-      }
-    };
-
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEsc);
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEsc);
-      document.body.style.overflow = '';
-    };
-  }, [onClose]);
-
-  const scrollToTop = () => {
-    if (modalRef.current) modalRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  return (
-    <motion.div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      role="dialog"
-      aria-labelledby={`modal-title-${project.id}`}
-      aria-describedby={`modal-description-${project.id}`}
-    >
-      <motion.div 
-        ref={modalRef}
-        className="project-modal-scroll bg-background/90 backdrop-blur-md w-full max-w-[90vw] sm:max-w-2xl lg:max-w-4xl max-h-[90vh] rounded-xl relative shadow-2xl border border-white/10 overflow-y-auto"
-        initial={{ scale: 0.9, y: 20 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.9, y: 20 }}
-        transition={{ type: "spring", damping: 20, stiffness: 100 }}
+      <motion.article
+        style={{ scale, opacity }}
+        className="surface overflow-hidden bg-surface/95 backdrop-blur-sm"
       >
-        <button 
-          className="absolute top-3 right-3 bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors z-10"
-          onClick={onClose}
-          aria-label="Close project modal"
-        >
-          <X size={18} className="text-white" />
-        </button>
-        
-        <div className="relative w-full h-40 sm:h-48 md:h-56 lg:h-64 overflow-hidden">
-          {!imageLoaded && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
-              <motion.div
-                className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              />
-            </div>
-          )}
-          <img 
-            src={project.image} 
-            alt={project.title}
-            className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-            loading="lazy"
-            onLoad={() => setImageLoaded(true)}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/50 to-transparent" />
-        </div>
-        
-        <div className="p-4 sm:p-6 lg:p-8">
-          <h3 id={`modal-title-${project.id}`} className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-3 text-foreground">
-            {project.title}
-          </h3>
-          
-          <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4 lg:mb-6">
-            {project.tags.map((tag) => (
-              <motion.span 
-                key={tag} 
-                className="bg-primary/20 text-primary text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-full"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.2 }}
-              >
-                {tag}
-              </motion.span>
-            ))}
+        <div className="grid lg:grid-cols-[1.05fr_1fr]">
+          {/* Visual */}
+          <div className="relative aspect-[16/10] overflow-hidden border-b border-border lg:aspect-auto lg:min-h-[27rem] lg:border-b-0 lg:border-r">
+            <Monogram project={project} />
           </div>
-          
-          <p id={`modal-description-${project.id}`} className="text-xs sm:text-sm md:text-base lg:text-lg mb-4 sm:mb-6 leading-relaxed text-foreground/80">
-            {project.detailedDescription || project.description}
-          </p>
-          
-          {hasDemo && (
-            <div className="flex flex-wrap gap-2 sm:gap-3 lg:gap-4">
-              <a
-                href={project.demo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 sm:gap-2 bg-background/50 text-foreground text-xs sm:text-sm md:text-base px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-white/20 hover:border-white/30 hover:bg-background/70 transition-all"
-                aria-label={`View live demo of ${project.title}`}
-              >
-                <ExternalLink size={16} />
-                <span>Live Demo</span>
-              </a>
-            </div>
-          )}
-        </div>
 
-        {/* <motion.button
-          className="absolute bottom-3 right-3 bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors"
-          onClick={scrollToTop}
-          aria-label="Scroll to top of modal"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <ArrowUp size={18} className="text-white" />
-        </motion.button> */}
-      </motion.div>
-    </motion.div>
+          {/* Copy */}
+          <div className="flex flex-col justify-between gap-8 p-6 sm:p-8 lg:p-10">
+            <div className="min-w-0">
+              <div className="mb-5 flex items-center gap-3">
+                <span className="font-mono text-xs text-muted-foreground/60">
+                  {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
+                </span>
+                <span className="h-px flex-1 bg-border" aria-hidden />
+                <span className="font-mono text-xs text-muted-foreground">{project.year}</span>
+              </div>
+
+              <h3 className="font-display text-2xl font-bold tracking-tight sm:text-3xl lg:text-[2.4rem] lg:leading-[1.1]">
+                {project.title}
+              </h3>
+
+              {/* Client is named but never linked — the ERP itself isn't
+                  public, and linking their marketing site would imply it is. */}
+              {project.client && (
+                <p className="mt-2 font-mono text-xs uppercase tracking-[0.15em] text-primary">
+                  {project.client}
+                </p>
+              )}
+
+              <p className="mt-4 max-w-[52ch] leading-relaxed text-muted-foreground">
+                {project.summary}
+              </p>
+
+              <p className="mt-5 border-l-2 border-primary/40 pl-4 text-sm leading-relaxed text-foreground/80">
+                {project.outcome}
+              </p>
+
+              <div className="mt-6 flex flex-wrap gap-2">
+                {project.tags.slice(0, 5).map((tag) => (
+                  <span key={tag} className="chip">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <button onClick={onOpen} className="btn-primary text-sm">
+                Case detail
+                <Plus className="h-4 w-4" />
+              </button>
+
+              {project.demo ? (
+                <a
+                  href={project.demo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-ghost text-sm"
+                >
+                  Visit live
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              ) : (
+                <StatusPill status={project.status} />
+              )}
+            </div>
+          </div>
+        </div>
+      </motion.article>
+    </div>
   );
 };
+
+/* -------------------------------------------------------------------------- */
+/*  Remaining work — compact grid                                             */
+/* -------------------------------------------------------------------------- */
+
+const CompactCard = ({ project, onOpen }: { project: Project; onOpen: () => void }) => (
+  <StaggerItem variant="fade-up" as="article" className="min-w-0">
+    <button
+      onClick={onOpen}
+      className="surface-interactive group flex h-full w-full flex-col p-5 text-left sm:p-6"
+    >
+      <div className="flex items-start justify-between gap-4">
+        <h3 className="font-display text-lg font-semibold leading-snug tracking-tight">
+          {project.title}
+        </h3>
+        <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+      </div>
+
+      {project.client && (
+        <p className="mt-1.5 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-primary/80">
+          {project.client}
+        </p>
+      )}
+
+      <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">{project.summary}</p>
+
+      <div className="mt-5 flex flex-wrap items-center gap-2">
+        {project.tags.slice(0, 3).map((tag) => (
+          <span key={tag} className="chip">
+            {tag}
+          </span>
+        ))}
+        {project.status === 'live' && (
+          <span className="ml-auto font-mono text-[0.62rem] uppercase tracking-widest text-primary">
+            Live
+          </span>
+        )}
+      </div>
+    </button>
+  </StaggerItem>
+);
+
+/* -------------------------------------------------------------------------- */
 
 const ProjectsSection = () => {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const sectionRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-  
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const y = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [80, 0, 0, 80]);
+  const [filter, setFilter] = useState<ProjectFilter>('all');
+  const [showAll, setShowAll] = useState(false);
+  const [active, setActive] = useState<Project | null>(null);
+
+  const matching = rest.filter((p) => filter === 'all' || p.kind === filter);
+  const visible = showAll ? matching : matching.slice(0, PREVIEW_COUNT);
+  const hidden = matching.length - visible.length;
 
   return (
-    <section 
-      id="projects" 
-      ref={sectionRef} 
-      className="py-12 sm:py-16 md:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/10 to-background -z-10" />
-      
-      <motion.div
-        className="container mx-auto max-w-7xl"
-        style={{ opacity, y }}
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="text-center mb-8 sm:mb-12 md:mb-16 lg:mb-20"
-        >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold">My Projects </h2>
-          <motion.div 
-            className="w-32 sm:w-40 h-1 bg-primary mx-auto mt-4 sm:mt-6 opacity-60 shadow-glow"
-            animate={{ width: ["0%", "40%", "20%", "40%"] }}
-            transition={{ duration: 4, repeat: Infinity, repeatType: "reverse" }}
-          />
-          
-          <p className="text-foreground/70 max-w-md sm:max-w-lg md:max-w-xl mx-auto mt-3 sm:mt-4 md:mt-6 text-xs sm:text-sm md:text-base lg:text-lg px-2 sm:px-4">
-            Explore my recent projects showcasing a blend of creativity, technology, and problem-solving.
-          </p>
-        </motion.div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
-          {projects.map((project, index) => (
-            <ProjectCard 
-              key={project.id} 
-              project={project} 
-              index={index}
-              onClick={() => setSelectedProject(project)}
+    <section id="work" className="section-y relative">
+      <div className="section-shell">
+        <SectionHeading
+          index="03"
+          eyebrow="Selected work"
+          title="Three ERP systems, and the automation layer around them."
+          description="Enterprise platforms built end to end — schema, API, interface, tests, deployment — plus the client products and AI workflows behind them."
+        />
+      </div>
+
+      {/* --- Featured stack --------------------------------------------- */}
+      <div className="section-shell mt-14 lg:mt-20">
+        <div className="space-y-6 lg:space-y-10">
+          {featured.map((p, i) => (
+            <StackCard
+              key={p.id}
+              project={p}
+              index={i}
+              total={featured.length}
+              onOpen={() => setActive(p)}
             />
           ))}
         </div>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="text-center mt-8 sm:mt-12 md:mt-16"
+      </div>
+
+      {/* --- Everything else -------------------------------------------- */}
+      <div className="section-shell mt-20 lg:mt-32">
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <Reveal variant="fade-up">
+            <h3 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">
+              More work
+            </h3>
+          </Reveal>
+
+          <Reveal variant="fade" delay={0.08}>
+            <div className="flex flex-wrap gap-1 rounded-full border border-border bg-surface p-1">
+              {projectFilters.map((f) => (
+                <button
+                  key={f.id}
+                  onClick={() => {
+                    setFilter(f.id);
+                    setShowAll(false);
+                  }}
+                  aria-pressed={filter === f.id}
+                  className={cn(
+                    'relative rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors duration-300 sm:text-sm',
+                    filter === f.id
+                      ? 'text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground',
+                  )}
+                >
+                  {filter === f.id && (
+                    <motion.span
+                      layoutId="work-tab"
+                      className="absolute inset-0 rounded-full bg-primary"
+                      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                    />
+                  )}
+                  <span className="relative">{f.label}</span>
+                </button>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+
+        {/* auto-fill grid: column count follows the viewport, no breakpoint
+            juggling, and it never strands one card in a wide row.
+            `key` remounts it so the stagger replays on filter/expand. */}
+        <Stagger
+          key={`${filter}-${showAll}`}
+          stagger={0.05}
+          className="mt-8 grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(min(100%,19rem),1fr))]"
         >
-          <a 
-            href="https://github.com/sahiltalaviya99"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-background/50 text-foreground text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 rounded-lg border border-white/20 hover:border-white/30 hover:bg-background/70 transition-all hover:shadow-lg"
-            aria-label="Visit my GitHub profile for more projects"
-          >
-            <Github size={16} className="group-hover:rotate-12 transition-transform" />
-            <span>Explore More on GitHub</span>
-          </a>
-        </motion.div>
-      </motion.div>
-      
-      <AnimatePresence>
-        {selectedProject && (
-          <ProjectModal 
-            project={selectedProject} 
-            onClose={() => setSelectedProject(null)}
-          />  
+          {visible.map((p) => (
+            <CompactCard key={p.id} project={p} onOpen={() => setActive(p)} />
+          ))}
+        </Stagger>
+
+        {matching.length === 0 && (
+          <p className="mt-8 text-sm text-muted-foreground">Nothing in this category yet.</p>
         )}
-      </AnimatePresence>
+
+        {/* View all — the rest of the catalogue is one click away rather than
+            dumped on the page. */}
+        {hidden > 0 && (
+          <Reveal variant="fade" className="mt-8 flex justify-center">
+            <button onClick={() => setShowAll(true)} className="btn-ghost group text-sm">
+              View all {matching.length} projects
+              <ChevronDown className="h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5" />
+            </button>
+          </Reveal>
+        )}
+
+        {showAll && matching.length > PREVIEW_COUNT && (
+          <div className="mt-8 flex justify-center">
+            <button
+              onClick={() => setShowAll(false)}
+              className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground transition-colors hover:text-primary"
+            >
+              Show less
+            </button>
+          </div>
+        )}
+
+        {/* --- Earlier work ---------------------------------------------- */}
+        <Reveal variant="fade-up" className="mt-16">
+          <div className="surface p-6 sm:p-8">
+            <h4 className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-muted-foreground">
+              Earlier builds
+            </h4>
+            <ul className="mt-5 divide-y divide-border">
+              {earlierWork.map((w) => (
+                <li key={w.title}>
+                  <a
+                    href={w.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex flex-wrap items-baseline gap-x-4 gap-y-1 py-3.5 transition-colors hover:text-primary"
+                  >
+                    <span className="font-display font-semibold tracking-tight">{w.title}</span>
+                    <span className="min-w-0 flex-1 text-sm text-muted-foreground">{w.note}</span>
+                    <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Reveal>
+      </div>
+
+      {/* --- Detail dialog ------------------------------------------------
+          Radix Dialog: focus trap, Escape, scroll lock and aria wiring all
+          come for free. The previous hand-rolled modal had none of them. */}
+      <Dialog open={!!active} onOpenChange={(open) => !open && setActive(null)}>
+        <DialogContent className="max-h-[88svh] max-w-2xl overflow-y-auto rounded-2xl border-border bg-elevated p-0">
+          {active && (
+            <>
+              <div className="relative aspect-[16/9] overflow-hidden rounded-t-2xl">
+                <Monogram project={active} />
+              </div>
+
+              <div className="p-6 sm:p-8">
+                <DialogHeader className="space-y-3 text-left">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <StatusPill status={active.status} />
+                    <span className="font-mono text-xs text-muted-foreground">{active.year}</span>
+                  </div>
+
+                  <DialogTitle className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+                    {active.title}
+                  </DialogTitle>
+
+                  {active.client && (
+                    <p className="font-mono text-xs uppercase tracking-[0.15em] text-primary">
+                      {active.client}
+                    </p>
+                  )}
+
+                  <DialogDescription className="text-base leading-relaxed text-muted-foreground">
+                    {active.detail}
+                  </DialogDescription>
+                </DialogHeader>
+
+                <dl className="mt-7 grid gap-4 border-y border-border py-5 sm:grid-cols-2">
+                  <div>
+                    <dt className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-muted-foreground/70">
+                      My role
+                    </dt>
+                    <dd className="mt-1.5 text-sm text-foreground">{active.role}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-muted-foreground/70">
+                      Outcome
+                    </dt>
+                    <dd className="mt-1.5 text-sm text-foreground">{active.outcome}</dd>
+                  </div>
+                </dl>
+
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {active.tags.map((tag) => (
+                    <span key={tag} className="chip">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                {active.demo && (
+                  <motion.a
+                    href={active.demo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15, ease: easeOutExpo }}
+                    className="btn-primary mt-7 w-full sm:w-auto"
+                  >
+                    Visit live site
+                    <ExternalLink className="h-4 w-4" />
+                  </motion.a>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

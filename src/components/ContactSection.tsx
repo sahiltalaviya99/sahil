@@ -1,185 +1,116 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Github, Linkedin, Mail } from 'lucide-react';
+import { useState } from 'react';
+import { Check, Copy } from 'lucide-react';
+import { toast } from 'sonner';
 
-const quotes = [
-  "Empowering web development with the intelligence of AI.",
-  "Building smarter, faster, and more efficient applications with AI tools.",
-  "Leveraging AI to accelerate innovation and code with confidence.",
-  "Combining creativity with artificial intelligence for next-gen web experiences.",
-  "Supercharging development workflows with cutting-edge AI technology.",
-  "Where human logic meets machine intelligence in modern development.",
-  "Shaping the future of code with AI-assisted solutions.",
-  "Harnessing the power of AI to write, debug, and optimize code smarter.",
-  "From idea to deployment—AI accelerates every step of the dev journey.",
-  "Transforming traditional development with the future of AI assistance."
-];
+import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
+import { SectionHeading } from '@/components/ui-kit/SectionHeading';
+import { site, socials } from '@/content/site';
 
 const ContactSection = () => {
-  const [currentQuote, setCurrentQuote] = useState(0);
-  const sectionRef = useRef(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(containerRef, { once: false, amount: 0.3 });
+  const [copied, setCopied] = useState(false);
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"]
-  });
-
-  const opacity = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [0, 1, 1, 0]);
-  const y = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [100, 0, 0, 100]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentQuote((prev) => (prev + 1) % quotes.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const animations = {
-    container: {
-      hidden: { opacity: 0 },
-      visible: {
-        opacity: 1,
-        transition: {
-          staggerChildren: 0.2,
-          when: "beforeChildren"
-        }
-      }
-    },
-    item: {
-      hidden: { opacity: 0, y: 20 },
-      visible: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.6 }
-      }
-    },
-    quote: {
-      initial: { opacity: 0, y: 20 },
-      animate: { opacity: 1, y: 0 },
-      exit: { opacity: 0, y: -20 },
-      transition: { duration: 0.8 }
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(site.email);
+      setCopied(true);
+      toast.success('Email copied to clipboard');
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard is blocked in some contexts (insecure origin, permissions) —
+      // fall back to just opening the mail client rather than failing silently.
+      toast.error('Could not copy — opening your mail app instead');
+      window.location.href = `mailto:${site.email}`;
     }
   };
 
-  const ContactInfoItem = ({ icon: Icon, title, value, href }: {
-    icon: React.ComponentType<{ className?: string }>;
-    title: string;
-    value: string;
-    href?: string;
-  }) => (
-    <motion.div
-      className="flex items-start gap-4 sm:gap-6"
-      variants={animations.item}
-    >
-      <div className="flex items-center justify-center bg-primary/20 p-3 sm:p-4 rounded-full shadow-glow shrink-0">
-        <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-      </div>
-      <div>
-        <h4 className="font-medium text-base sm:text-lg mb-1">{title}</h4>
-        {href ? (
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${title} link`}
-            className="text-foreground/70 hover:text-primary transition-colors text-sm sm:text-base break-all"
-          >
-            {value}
-          </a>
-        ) : (
-          <span className="text-foreground/70 text-sm sm:text-base break-all">{value}</span>
-        )}
-      </div>
-    </motion.div>
-  );
-
   return (
-    <section id="contact" ref={sectionRef} className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 relative overflow-hidden">
-      <div className="absolute inset-0 animated-gradient opacity-10 -z-10" />
+    <section id="contact" className="section-y relative">
+      <div className="section-shell">
+        <SectionHeading
+          index="05"
+          eyebrow="Contact"
+          title={
+            <>
+              Got something that needs building — <span className="text-primary">or automating?</span>
+            </>
+          }
+          description="I'm open to full-stack builds, ERP and business systems, and AI automation work. The fastest way to reach me is email; I reply within a day."
+        />
 
-      <motion.div
-        className="container mx-auto max-w-7xl"
-        style={{ opacity, y }}
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="text-center mb-12 sm:mb-16 md:mb-20"
-        >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold">CONTACT ME</h2>
-          <motion.div
-            className="w-32 sm:w-40 h-1 bg-primary mx-auto mt-4 sm:mt-6 opacity-60 shadow-glow"
-            animate={{ width: ["0%", "25%", "10%", "25%"] }}
-            transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
-          />
-        </motion.div>
+        {/* --- The email, as the main event ---------------------------- */}
+        <Reveal variant="blur-in" className="mt-12 lg:mt-16">
+          <div className="surface relative overflow-hidden p-6 sm:p-10">
+            <div className="pointer-events-none absolute inset-0 bg-dots opacity-30" aria-hidden />
 
-        <motion.div
-          ref={containerRef}
-          variants={animations.container}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-14 max-w-6xl mx-auto"
-        >
-          {/* Contact Info */}
-          <motion.div
-            className="space-y-6 sm:space-y-8 bg-gradient-to-br from-background to-muted/50 p-6 sm:p-8 rounded-xl border border-white/10 shadow-glow"
-            variants={animations.item}
-          >
-            <h3 className="text-xl sm:text-2xl font-bold mb-4 gradient-text">Get In Touch</h3>
+            <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="min-w-0">
+                <p className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-muted-foreground">
+                  Write to me
+                </p>
 
-            <ContactInfoItem
-              icon={Mail}
-              title="Email"
-              value="sahiltalaviya9922@gmail.com"
-              href="mailto:sahiltalaviya9922@gmail.com"
-            />
-
-            <ContactInfoItem
-              icon={Linkedin}
-              title="LinkedIn"
-              value="linkedin.com/in/sahil-talaviya-99o9657o18"
-              href="https://linkedin.com/in/sahil-talaviya-99o9657o18"
-            />
-
-            <ContactInfoItem
-              icon={Github}
-              title="GitHub"
-              value="github.com/sahiltalaviya99"
-              href="https://github.com/sahiltalaviya99"
-            />
-          </motion.div>
-
-          {/* Quote Section */}
-          <motion.div className="h-full flex flex-col" variants={animations.item}>
-            <div className="relative h-full bg-gradient-to-br from-background to-muted/50 p-6 sm:p-8 rounded-xl border border-white/10 shadow-glow">
-              <div className="absolute -inset-1 bg-gradient-to-r  rounded-xl blur opacity-30 -z-10" />
-              <div className="h-full flex flex-col justify-center">
-                <h3 className="text-xl sm:text-2xl font-bold mb-6 gradient-text">My Philosophy</h3>
-                <div className="min-h-[9rem] sm:min-h-[10rem] md:min-h-[11rem] flex items-center">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={currentQuote}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                      variants={animations.quote}
-                      className="text-foreground/80 text-lg sm:text-xl md:text-2xl leading-relaxed"
-                    >
-                      {quotes[currentQuote]}
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-                <p className="mt-4 text-right text-sm sm:text-base text-foreground/60">— Sahil Talaviya</p>
+                <a
+                  href={`mailto:${site.email}`}
+                  className="mt-2 block font-display text-[clamp(1.15rem,4.2vw,2.5rem)] font-bold tracking-tight transition-colors hover:text-primary"
+                  // Long address on a 360px screen must break, not overflow.
+                  style={{ overflowWrap: 'anywhere' }}
+                >
+                  {site.email}
+                </a>
               </div>
+
+              <button
+                onClick={copyEmail}
+                className="btn-ghost shrink-0 self-start lg:self-auto"
+                aria-label="Copy email address"
+              >
+                {copied ? (
+                  <>
+                    <Check className="h-4 w-4 text-primary" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4" />
+                    Copy address
+                  </>
+                )}
+              </button>
             </div>
-          </motion.div>
-        </motion.div>
-      </motion.div>
+          </div>
+        </Reveal>
+
+        {/* --- Everywhere else ----------------------------------------- */}
+        <Stagger
+          stagger={0.08}
+          className="mt-4 grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr))]"
+        >
+          {socials.map((s) => (
+            <StaggerItem key={s.name} variant="fade-up">
+              <a
+                href={s.href}
+                target={s.download ? undefined : '_blank'}
+                rel="noopener noreferrer"
+                download={s.download}
+                className="surface-interactive group flex h-full items-center gap-4 p-5"
+              >
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border bg-elevated text-muted-foreground transition-colors duration-300 group-hover:border-primary/40 group-hover:text-primary">
+                  <s.icon className="h-4 w-4" />
+                </span>
+
+                <span className="min-w-0">
+                  <span className="block text-sm font-medium">{s.name}</span>
+                  <span
+                    className="block truncate text-xs text-muted-foreground"
+                    title={s.handle}
+                  >
+                    {s.handle}
+                  </span>
+                </span>
+              </a>
+            </StaggerItem>
+          ))}
+        </Stagger>
+      </div>
     </section>
   );
 };

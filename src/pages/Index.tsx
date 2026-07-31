@@ -1,61 +1,48 @@
-
 import { useEffect } from 'react';
-import { motion } from 'framer-motion';
-import Navbar from '../components/Navbar';
-import HeroSection from '../components/HeroSection';
-import AboutSection from '../components/AboutSection';
-import ProjectsSection from '../components/ProjectsSection';
-import SkillsSection from '../components/SkillsSection';
-import ExperienceSection from '../components/ExperienceSection';
-import ContactSection from '../components/ContactSection';
-import Footer from '../components/Footer';
 
+import Navbar from '@/components/Navbar';
+import { CommandPalette } from '@/components/CommandPalette';
+import HeroSection from '@/components/HeroSection';
+import AboutSection from '@/components/AboutSection';
+import ExperienceSection from '@/components/ExperienceSection';
+import ProjectsSection from '@/components/ProjectsSection';
+import SkillsSection from '@/components/SkillsSection';
+import ContactSection from '@/components/ContactSection';
+import Footer from '@/components/Footer';
+import { Backdrop } from '@/components/ui-kit/Backdrop';
+import { site } from '@/content/site';
+
+/**
+ * Section order here must match SECTIONS in src/content/site.ts — that array
+ * drives the navbar and the active-section observer.
+ *
+ * Note there is no anchor-click handler here any more. Smooth scrolling is
+ * Lenis (src/App.tsx) and navigation goes through useScrollToSection.
+ */
 const Index = () => {
-  // Set page title and implement smooth scrolling
   useEffect(() => {
-    document.title = 'Sahil Talaviya | Frontend Developer';
-    
-    // Implement smooth scrolling for anchor links
-    const handleAnchorClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'A' && target.getAttribute('href')?.startsWith('#')) {
-        e.preventDefault();
-        const id = target.getAttribute('href')?.substring(1);
-        if (id) {
-          const element = document.getElementById(id);
-          if (element) {
-            window.scrollTo({
-              behavior: 'smooth',
-              top: element.offsetTop - 80 // Accounting for fixed header
-            });
-            
-            // Update URL without page reload
-            history.pushState(null, '', `#${id}`);
-          }
-        }
-      }
-    };
-    
-    document.addEventListener('click', handleAnchorClick);
-    return () => document.removeEventListener('click', handleAnchorClick);
+    document.title = `${site.name} — ${site.role}`;
   }, []);
 
   return (
-    <motion.div 
-      className="min-h-screen"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
+    <>
+      <Backdrop />
       <Navbar />
-      <HeroSection />
-      <AboutSection />
-      <ExperienceSection />
-      <ProjectsSection />
-      <SkillsSection />
-      <ContactSection />
+      {/* Mounted here rather than inside Navbar so the ⌘K listener survives
+          independently of the header. */}
+      <CommandPalette />
+
+      <main>
+        <HeroSection />
+        <AboutSection />
+        <ExperienceSection />
+        <ProjectsSection />
+        <SkillsSection />
+        <ContactSection />
+      </main>
+
       <Footer />
-    </motion.div>
+    </>
   );
 };
 

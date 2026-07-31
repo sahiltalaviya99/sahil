@@ -1,267 +1,164 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Briefcase, GraduationCap, Calendar, Star } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useRef, useState } from 'react';
+import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion';
+import { Briefcase, GraduationCap } from 'lucide-react';
 
-const experiences = [
-  {
-  title: "Web Developer & Automation Expert",
-  company: "iTechNotion Pvt Ltd",
-  period: "2025–Present",
-  description:
-    "Developing and maintaining live, production-level web applications using React.js and Next.js, integrating APIs, and building automation workflows with n8n to streamline HR, sales, and marketing processes.",
-  skills: [
-    "React.js",
-    "Next.js",
-    "JavaScript",
-    "Tailwind CSS",
-    "Automation (n8n)",
-    "Git",
-    "GitHub"
-  ],
-  icon: "work",
-  highlight: true,
-},
-  {
-    title: "AI/ML Intern (15-day Bootcamp)",
-    company: "IBM SkillBuild",
-    period: "May 2024",
-    description:
-      "Completed a 15-day intensive internship focused on AI and machine learning. Created a chatbot using IBM Watson AI and gained hands-on experience with AI tools and technologies.",
-    skills: ["IBM Watson AI", "Chatbot Development", "Machine Learning", "Python"],
-    icon: "education",
-    highlight: false,
-  },
-  {
-    title: "B.Tech in Information Technology",
-    company: "GIT",
-    period: "2021–2025",
-    description:
-      "Bachelor’s degree in Information Technology, with a focus on web technologies and software development.",
-    skills: ["Algorithms", "Data Structures", "OOP", "Database Systems"],
-    icon: "education",
-    highlight: false,
-  },
-];
+import { Reveal } from '@/components/motion/Reveal';
+import { SectionHeading } from '@/components/ui-kit/SectionHeading';
+import {
+  experience,
+  experienceFilters,
+  type Entry,
+  type ExperienceFilter,
+} from '@/content/experience';
+import { cn } from '@/lib/utils';
+import { easeOutExpo } from '@/lib/motion';
 
-export default function ExperienceSection() {
-  const [activeTab, setActiveTab] = useState("all");
-
-  const filteredExperiences =
-    activeTab === "all"
-      ? experiences
-      : experiences.filter((exp) => exp.icon === activeTab);
+const TimelineEntry = ({ entry }: { entry: Entry }) => {
+  const Icon = entry.type === 'work' ? Briefcase : GraduationCap;
 
   return (
-    <section
-      id="experience"
-      className="py-8 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-b from-secondary/20 to-secondary/40 min-h-[80vh] lg:min-h-[calc(100vh-4rem)]"
-      aria-labelledby="experience-heading"
+    <motion.li
+      layout
+      initial={{ opacity: 0, y: 28 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -12 }}
+      transition={{ duration: 0.55, ease: easeOutExpo }}
+      className="relative pl-12 sm:pl-16"
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-        <div className="text-center mb-6 sm:mb-8 md:mb-10">
-          
-          {/* <p className="text-muted-foreground text-xs sm:text-sm md:text-base mt-2 max-w-md sm:max-w-lg mx-auto">
-            My professional journey and academic background shaping my expertise
-          </p> */}
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold">Experince and Education</h2>
-          <motion.div 
-            className="w-32 sm:w-40 h-1 bg-primary mx-auto mt-4 sm:mt-6 opacity-60 shadow-glow"
-            animate={{ width: ["0%", "40%", "20%", "40%"] }}
-            transition={{ duration: 4, repeat: Infinity, repeatType: "reverse" }}
-          />
-        </div>
+      {/* Node on the rail */}
+      <span
+        className={cn(
+          'absolute left-0 top-1 grid h-9 w-9 place-items-center rounded-full border sm:h-11 sm:w-11',
+          entry.current
+            ? 'glow-sm border-primary/50 bg-primary/15 text-primary'
+            : 'border-border bg-elevated text-muted-foreground',
+        )}
+      >
+        <Icon className="h-4 w-4 sm:h-[1.1rem] sm:w-[1.1rem]" />
+      </span>
 
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="w-full"
-          aria-label="Filter experiences by category"
-        >
-          <div className="flex justify-center mb-4 sm:mb-6 md:mb-8">
-            <TabsList className="grid grid-cols-3 w-full max-w-[16rem] sm:max-w-[20rem] md:max-w-[24rem] gap-1 bg-background/90 p-1 rounded-lg shadow-sm">
-              {[
-                { label: "All", value: "all", icon: null },
-                {
-                  label: "Work",
-                  value: "work",
-                  icon: <Briefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />,
-                },
-                {
-                  label: "Education",
-                  value: "education",
-                  icon: <GraduationCap className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />,
-                },
-              ].map((tab) => (
-                <TabsTrigger
-                  key={tab.value}
-                  value={tab.value}
-                  className={cn(
-                    "flex items-center justify-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 text-xs sm:text-sm md:text-base font-medium rounded-md transition-all duration-300",
-                    "data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-md",
-                    "data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted data-[state=inactive]:hover:text-foreground",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                  )}
-                  aria-selected={activeTab === tab.value}
-                  role="tab"
-                >
-                  {tab.icon && <span className="hidden xs:inline-flex">{tab.icon}</span>}
-                  <span className="truncate">{tab.label}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
+      <div className="surface-interactive p-5 sm:p-7">
+        <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
+          <div className="min-w-0">
+            <h3 className="font-display text-lg font-semibold tracking-tight sm:text-xl">
+              {entry.title}
+            </h3>
+            <p className="mt-1 text-sm text-primary">{entry.org}</p>
           </div>
 
-          <TabsContent value={activeTab} className="focus:outline-none">
-            <div className="relative">
-              {/* Timeline Line - Desktop Center */}
-              <div className="hidden md:block absolute left-1/2 w-1 bg-gradient-to-b from-primary/20 via-primary/40 to-primary/20 rounded-full h-full -translate-x-1/2"></div>
-              
-              {/* Timeline Line - Mobile Left */}
-              <div className="absolute left-3 sm:left-4 w-0.5 sm:w-1 bg-gradient-to-b from-primary/20 via-primary/40 to-primary/20 rounded-full h-full md:hidden"></div>
+          <div className="flex shrink-0 items-center gap-2">
+            {entry.current && <span className="chip-primary">Current</span>}
+            {/* Period wraps rather than truncating — long ranges stay legible. */}
+            <span className="font-mono text-xs text-muted-foreground">{entry.period}</span>
+          </div>
+        </div>
 
-              <div className="space-y-6 sm:space-y-8 md:space-y-10">
-                {filteredExperiences.map((item, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.15, ease: "easeOut" }}
-                    viewport={{ once: true, margin: "-50px" }}
-                  >
-                    <TimelineItem {...item} isEven={index % 2 === 0} index={index} />
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
+        <p className="mt-4 max-w-[62ch] text-sm leading-relaxed text-muted-foreground">
+          {entry.summary}
+        </p>
+
+        <ul className="mt-4 space-y-2">
+          {entry.points.map((point) => (
+            <li key={point} className="flex gap-3 text-sm leading-relaxed text-muted-foreground">
+              <span className="mt-[0.55rem] h-1 w-1 shrink-0 rounded-full bg-primary" />
+              <span className="min-w-0">{point}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-5 flex flex-wrap gap-2">
+          {entry.skills.map((skill) => (
+            <span key={skill} className="chip">
+              {skill}
+            </span>
+          ))}
+        </div>
+      </div>
+    </motion.li>
+  );
+};
+
+const ExperienceSection = () => {
+  const [filter, setFilter] = useState<ExperienceFilter>('all');
+  const railRef = useRef<HTMLDivElement>(null);
+
+  const visible = experience.filter((e) => filter === 'all' || e.type === filter);
+
+  // The rail fills as the timeline scrolls past. Spring-smoothed so it tracks
+  // Lenis rather than snapping frame to frame.
+  const { scrollYProgress } = useScroll({
+    target: railRef,
+    offset: ['start 80%', 'end 60%'],
+  });
+  const railScale = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.5 });
+
+  return (
+    <section id="experience" className="section-y relative">
+      <div className="section-shell">
+        <SectionHeading
+          index="02"
+          eyebrow="Experience & Education"
+          title="Where I've built things, and what I learned first."
+        />
+
+        {/* Filters */}
+        <Reveal variant="fade-up" className="mt-10">
+          <div
+            role="tablist"
+            aria-label="Filter experience"
+            className="inline-flex flex-wrap gap-1 rounded-full border border-border bg-surface p-1"
+          >
+            {experienceFilters.map((f) => (
+              <button
+                key={f.id}
+                role="tab"
+                aria-selected={filter === f.id}
+                onClick={() => setFilter(f.id)}
+                className={cn(
+                  'relative rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300',
+                  filter === f.id
+                    ? 'text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground',
+                )}
+              >
+                {filter === f.id && (
+                  <motion.span
+                    layoutId="exp-tab"
+                    className="absolute inset-0 rounded-full bg-primary"
+                    transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                  />
+                )}
+                <span className="relative">{f.label}</span>
+              </button>
+            ))}
+          </div>
+        </Reveal>
+
+        {/* Timeline */}
+        <div ref={railRef} className="relative mt-12">
+          {/* Rail track + progress fill. Height is driven by content, so it
+              can't overrun the last card the way the old h-full rail did. */}
+          <div
+            className="absolute bottom-0 left-[1.05rem] top-2 w-px bg-border sm:left-[1.3rem]"
+            aria-hidden
+          >
+            <motion.div
+              style={{ scaleY: railScale }}
+              className="h-full w-full origin-top bg-gradient-to-b from-primary via-primary/60 to-transparent"
+            />
+          </div>
+
+          <motion.ul layout className="space-y-8">
+            <AnimatePresence mode="popLayout" initial={false}>
+              {visible.map((entry) => (
+                <TimelineEntry key={entry.id} entry={entry} />
+              ))}
+            </AnimatePresence>
+          </motion.ul>
+        </div>
       </div>
     </section>
   );
-}
+};
 
-function TimelineItem({ title, company, period, description, skills, icon, isEven, index, highlight }) {
-  const IconComponent = icon === "work" ? (
-    <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-  ) : (
-    <GraduationCap className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-  );
-
-  return (
-    <div
-      className={cn(
-        "relative flex flex-col md:flex-row",
-        isEven ? "md:flex-row" : "md:flex-row-reverse"
-      )}
-    >
-      {/* Timeline Dot - Mobile (Left Side) */}
-      <div className="absolute left-2 sm:left-3 top-4 z-10 md:hidden">
-        <motion.div
-          className={cn(
-            "w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-white shadow-md transition-all duration-300",
-            highlight
-              ? "bg-gradient-to-br from-primary to-accent ring-2 ring-primary/30"
-              : "bg-gradient-to-br from-primary/80 to-accent/80"
-          )}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          {IconComponent}
-          {highlight && (
-            <span className="absolute -top-1 -right-1 bg-accent rounded-full p-0.5 shadow-sm">
-              <Star className="h-2.5 w-2.5 text-white" />
-            </span>
-          )}
-        </motion.div>
-      </div>
-
-      {/* Timeline Dot - Desktop (Center) */}
-      <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-        <motion.div
-          className={cn(
-            "w-8 h-8 lg:w-9 lg:h-9 rounded-full flex items-center justify-center text-white shadow-md transition-all duration-300",
-            highlight
-              ? "bg-gradient-to-br from-primary to-accent ring-4 ring-primary/30"
-              : "bg-gradient-to-br from-primary/80 to-accent/80"
-          )}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          {IconComponent}
-          {highlight && (
-            <span className="absolute -top-1 -right-1 bg-accent rounded-full p-0.5 shadow-sm">
-              <Star className="h-3 w-3 text-white" />
-            </span>
-          )}
-        </motion.div>
-      </div>
-
-      {/* Empty Column for Desktop Layout */}
-      <div className="hidden md:block md:w-1/2 md:pr-6 lg:pr-8" />
-
-      {/* Card Section - Mobile Full Width, Desktop Half Width */}
-      <div className="w-full md:w-1/2 pl-10 sm:pl-12 md:pl-0 md:px-6 lg:px-8">
-        <Card
-          className={cn(
-            "relative shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-t-4 bg-background/95 overflow-hidden",
-            highlight ? "border-t-primary" : "border-t-primary/70"
-          )}
-        >
-          {/* {highlight && (
-            <div className="absolute top-0 right-0">
-              <div className="w-16 h-16 overflow-hidden">
-                <div className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 rotate-45 bg-primary text-white text-xs px-5 py-1 font-medium shadow-sm">
-                  Current
-                </div>
-              </div>
-            </div>
-          )} */}
-          <CardHeader className="pb-2 pt-3 px-3 sm:pt-4 sm:px-4 md:pt-5 md:px-5">
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-3">
-              <div>
-                <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-foreground">
-                  {title}
-                </h3>
-                <p className="text-xs sm:text-sm md:text-base text-muted-foreground">
-                  {company}
-                </p>
-              </div>
-              <div className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground whitespace-nowrap bg-secondary/80 px-2 sm:px-2.5 py-1 rounded-full">
-                <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
-                <span className="truncate">{period}</span>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-2 pb-4 px-3 sm:px-4 md:px-5">
-            <p className="mb-3 sm:mb-4 text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-              {description}
-            </p>
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              {skills.map((skill) => (
-                <motion.div
-                  key={skill}
-                  whileHover={{ y: highlight ? -2 : 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      "text-xs sm:text-sm bg-primary/5 hover:bg-primary/10 text-foreground border-primary/20 py-0.5 px-2 transition-colors duration-300",
-                      highlight ? "hover:bg-primary/15" : ""
-                    )}
-                  >
-                    {skill}
-                  </Badge>
-                </motion.div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-}
+export default ExperienceSection;
