@@ -55,6 +55,18 @@ const LabPage = lazyRoute('lab', () => import('./pages/Lab'));
 const MotionPage = lazyRoute('motion', () => import('./pages/Motion'));
 
 /**
+ * Sahil's private résumé editor. **Unlisted on purpose** — it is absent from
+ * `ROUTES`, the footer sitemap and the ⌘K palette, and reachable only by typing
+ * the path. Do not add a link to it; that is the requirement, not an oversight.
+ *
+ * Note where it sits in the tree below: outside `SiteChrome`, so it renders
+ * without the navbar, footer, preloader and custom cursor. It is a tool, not a
+ * page of the portfolio.
+ */
+const RESUME_PATH = '/sahil9909657018';
+const ResumeBuilderPage = lazyRoute('resume', () => import('./pages/ResumeBuilder'));
+
+/**
  * Clears a caught error when the route changes, so one bad page doesn't leave
  * every other page showing the fallback. Has to live inside the router to read
  * the location; the outer boundary in main.tsx stays as the last line of
@@ -123,6 +135,16 @@ const App = () => (
       <BrowserRouter>
         <RouteBoundary>
           <Routes>
+            {/* Standalone, above the layout route — no chrome. */}
+            <Route
+              path={RESUME_PATH}
+              element={
+                <Suspense fallback={<div className="min-h-[100svh] bg-background" />}>
+                  <ResumeBuilderPage />
+                </Suspense>
+              }
+            />
+
             {/* Layout route: the navbar, footer, cursor and palette mount once
                 and survive every navigation. Only the Outlet swaps. */}
             <Route element={<SiteChrome />}>

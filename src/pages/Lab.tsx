@@ -252,12 +252,10 @@ const LabPage = () => {
     };
   }, []);
 
-  // Arriving from another route mid-scroll would otherwise land halfway down.
-  // Block body — a concise arrow would return scrollTo's value, which React
-  // then calls as the cleanup on unmount. See the note in Motion.tsx.
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  /* No scroll-to-top here. It lived in this effect and could not run until the
+     lazy chunk arrived — until then the route showed a Suspense fallback, the
+     document collapsed to fallback + footer, and the browser clamped you to the
+     bottom of it. SiteChrome now resets on the pathname change instead. */
 
   return (
     <>

@@ -75,19 +75,18 @@ const MotionPage = () => {
     };
   }, []);
 
-  /**
-   * Block body, not `useEffect(() => window.scrollTo(0, 0), [])`.
-   *
-   * A concise-body arrow returns the expression's value, and React treats an
-   * effect's return value as the cleanup function. `window.scrollTo` is
-   * documented as returning undefined but does not in every browser — Chrome
-   * 150 hands back an object here — so React stored it and called it on unmount:
-   * `TypeError: destroy is not a function`, which took the whole route down.
-   * Never give an effect a concise body unless it genuinely returns cleanup.
-   */
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  /* Scroll-to-top on arrival is SiteChrome's job now (useScrollTopOnNavigate).
+     It used to be an effect here, which could not fire until this lazy chunk
+     had downloaded — and until it does, the route renders a Suspense fallback,
+     the document collapses to fallback + footer, and the browser clamps your
+     scroll position to the bottom of that. Arriving from the Contact section
+     therefore opened this page at its footer, for as long as the chunk took.
+
+     It is also where `TypeError: destroy is not a function` came from: written
+     as `useEffect(() => window.scrollTo(0, 0), [])`, the concise body returned
+     scrollTo's value — undefined per spec, an object in Chrome 150 — and React
+     called it as the cleanup on unmount, taking the route down. Never give an
+     effect a concise body unless it genuinely returns a cleanup function. */
 
   return (
     <>
