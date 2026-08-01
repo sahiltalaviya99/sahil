@@ -1,5 +1,4 @@
-import type { ResumeDoc } from '@/content/resume';
-import { Classic, Compact, Sidebar } from '@/components/resume/templates';
+import { Classic, Compact, Sidebar, type TemplateProps } from '@/components/resume/templates';
 
 /**
  * The template registry.
@@ -17,8 +16,32 @@ export type Template = {
   label: string;
   /** Shown under the picker — say what it is *for*, not what it looks like. */
   note: string;
-  Component: (props: { doc: ResumeDoc }) => JSX.Element;
+  Component: (props: TemplateProps) => JSX.Element;
 };
+
+/**
+ * Accent swatches.
+ *
+ * **`null` is first and is the default: black and white.** A résumé is read by
+ * strangers on unknown printers and forwarded as often as it is opened, and mono
+ * is the version that survives all of that — colour is the option, not the
+ * baseline. Every value below is dark enough to hold contrast on white and to
+ * stay legible when a greyscale printer flattens it.
+ */
+export type AccentOption = { id: string; label: string; value: string | null };
+
+export const accents: AccentOption[] = [
+  { id: 'mono', label: 'Black & white', value: null },
+  // The site's emerald is #34D399 — a highlighter on paper. Same hue, 34% light.
+  { id: 'emerald', label: 'Emerald', value: '#1c8a63' },
+  { id: 'blue', label: 'Blue', value: '#1d5fb0' },
+  { id: 'navy', label: 'Navy', value: '#26405f' },
+  { id: 'plum', label: 'Plum', value: '#8a1c4f' },
+  { id: 'rust', label: 'Rust', value: '#a2542a' },
+];
+
+export const accentById = (id: string): AccentOption =>
+  accents.find((a) => a.id === id) ?? accents[0];
 
 export const templates: Template[] = [
   {

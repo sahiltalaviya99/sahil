@@ -1,5 +1,7 @@
 import { Github, Linkedin, Mail, FileText, type LucideIcon } from 'lucide-react';
 
+import { automationCount } from '@/content/automations';
+
 /**
  * Single source of truth for identity, navigation and contact.
  * Nothing here is duplicated in a component — if you need to change copy,
@@ -70,6 +72,17 @@ export const ROUTES = [
   { path: '/motion', label: 'Motion' },
 ] as const;
 
+/**
+ * The résumé builder.
+ *
+ * **Deliberately not in `ROUTES`.** Everything in that array is picked up by the
+ * navbar, the mobile drawer, the ⌘K palette *and* the footer sitemap; this page
+ * is linked from the footer only, by one hand-placed `<Link>` in Footer.tsx.
+ * Adding it to `ROUTES` would put an editor for the site owner's CV in the main
+ * navigation, which is not what it is for.
+ */
+export const RESUME_BUILDER_PATH = '/sahil9909657018';
+
 export type Social = {
   name: string;
   href: string;
@@ -126,6 +139,6 @@ export const systemLayers = [
  */
 export const stats = [
   { value: 3, suffix: '', label: 'Enterprise ERP systems built end to end' },
-  { value: 7, suffix: '', label: 'AI automation workflows in production' },
+  { value: automationCount, suffix: '', label: 'AI automation agents in production' },
   { value: 15, suffix: '+', label: 'Projects shipped across web and automation' },
 ];

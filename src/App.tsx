@@ -7,6 +7,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { SiteChrome } from '@/components/SiteChrome';
+import { RESUME_BUILDER_PATH } from '@/content/site';
 import { safeGet, safeSet } from '@/lib/safe-storage';
 import Index from './pages/Index';
 import NotFound from './pages/NotFound';
@@ -55,15 +56,14 @@ const LabPage = lazyRoute('lab', () => import('./pages/Lab'));
 const MotionPage = lazyRoute('motion', () => import('./pages/Motion'));
 
 /**
- * Sahil's private résumé editor. **Unlisted on purpose** — it is absent from
- * `ROUTES`, the footer sitemap and the ⌘K palette, and reachable only by typing
- * the path. Do not add a link to it; that is the requirement, not an oversight.
+ * The résumé editor. Its path lives in site.ts as `RESUME_BUILDER_PATH` and is
+ * kept out of `ROUTES` on purpose — the single link to it is hand-placed in the
+ * footer, so it stays out of the navbar, the drawer and the ⌘K palette.
  *
  * Note where it sits in the tree below: outside `SiteChrome`, so it renders
  * without the navbar, footer, preloader and custom cursor. It is a tool, not a
  * page of the portfolio.
  */
-const RESUME_PATH = '/sahil9909657018';
 const ResumeBuilderPage = lazyRoute('resume', () => import('./pages/ResumeBuilder'));
 
 /**
@@ -137,7 +137,7 @@ const App = () => (
           <Routes>
             {/* Standalone, above the layout route — no chrome. */}
             <Route
-              path={RESUME_PATH}
+              path={RESUME_BUILDER_PATH}
               element={
                 <Suspense fallback={<div className="min-h-[100svh] bg-background" />}>
                   <ResumeBuilderPage />

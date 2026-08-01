@@ -14,6 +14,12 @@
  * unrelated Unsplash stock photos on client work; those are gone.)
  */
 
+import {
+  automationCount,
+  automationDepartmentCount,
+  automationGroups,
+} from '@/content/automations';
+
 export type Project = {
   id: string;
   title: string;
@@ -160,15 +166,15 @@ export const projects: Project[] = [
   /* ---------------------------------------------------------------------- */
   {
     id: 'automation-suite',
-    title: 'HR, Sales & Marketing Automation Suite',
-    summary:
-      'A connected set of n8n workflows that took recurring internal operations off people’s desks.',
-    detail:
-      'Rather than one tool, this is an operational backbone: workflows spanning HR onboarding and offboarding, sales follow-up, marketing distribution and internal reporting. Each one replaces a recurring manual task — the individual agents listed below are pieces of it.',
+    title: 'Company-Wide AI Automation Suite',
+    summary: `${automationCount}+ n8n agents across ${automationDepartmentCount} departments — an operational backbone, not a set of scripts.`,
+    detail: `Not one tool but the automation layer a company runs on: ${automationCount}+ workflows spanning ${automationGroups
+      .map((g) => g.department)
+      .join(', ')}. Each replaces a recurring manual task outright rather than making it slightly faster — hiring from job post through to offer letter, lead qualification including voice agents, content generation across seven brand properties, CI/CD triage, and the reporting that used to be somebody's Monday morning. The HR set is entirely my own design and build.`,
     role: 'Automation design and implementation, end to end',
     year: '2025',
-    outcome: 'Recurring reporting and internal ops now run without manual effort.',
-    tags: ['n8n', 'Workflow Automation', 'HR', 'Sales', 'Marketing'],
+    outcome: `${automationCount}+ workflows in production; entire categories of recurring manual work removed rather than reduced.`,
+    tags: ['n8n', 'Workflow Automation', 'AI Agents', 'HR', 'Sales', 'Marketing'],
     kind: 'automation',
     status: 'internal',
   },

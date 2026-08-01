@@ -1,3 +1,4 @@
+import { automationCount, automationDepartmentCount, automationGroups } from '@/content/automations';
 import { experience } from '@/content/experience';
 import { projects } from '@/content/projects';
 import { site, socials } from '@/content/site';
@@ -95,7 +96,13 @@ export type ResumeDoc = {
   projects: ResumeProject[];
   skills: ResumeSkillRow[];
   education: ResumeEntry[];
-  note: string;
+  /**
+   * The closing line. Contact details rather than prose, and typed as
+   * `ContactItem[]` so the portfolio URL and the phone number are *clickable* in
+   * the printed PDF — the last thing on the page should be a way to reach him,
+   * not a paragraph about the site's exhibits.
+   */
+  footer: ContactItem[];
 };
 
 /* -------------------------------------------------------------------------- */
@@ -144,6 +151,9 @@ const TESTING_PATTERN =
 
 /** Whole skill groups that must not appear. */
 const EXCLUDED_SKILL_GROUPS = ['testing'];
+
+/** Individual skills dropped from the résumé but kept on the site. */
+const EXCLUDED_SKILLS = ['Linux servers'];
 
 /**
  * Bullets where testing is a clause, not the point.
@@ -241,9 +251,11 @@ export const defaultResume: ResumeDoc = {
     },
     {
       id: 'automation-suite',
-      title: 'HR, Sales & Marketing Automation Suite',
+      title: project('automation-suite').title,
       meta: projectMeta('automation-suite'),
-      body: 'Seven connected n8n workflows forming an operational backbone rather than one tool: sheet-triggered estimates and invoices through Zoho Books, an HR inbox agent that classifies mail and replies to candidates with matching openings, job posts fanned out to email and social, probation reviews scheduled automatically, and HR documents generated from maintained templates.',
+      body: `${automationCount}+ n8n agents across ${automationDepartmentCount} departments — ${automationGroups
+        .map((g) => g.department)
+        .join(', ')} — forming an operational backbone rather than a set of scripts. Hiring from job post through to offer letter, lead qualification including voice agents, content generation across seven brand properties, CI/CD triage, and the recurring reporting that used to be done by hand. The HR set is entirely my own design and build.`,
       stack: 'n8n · Zoho Books · Google Workspace APIs · Brevo',
     },
     {
@@ -266,7 +278,7 @@ export const defaultResume: ResumeDoc = {
       // Individual test-related skills can sit in other groups too.
       items: g.skills
         .map((s) => s.name)
-        .filter((n) => !TESTING_PATTERN.test(n))
+        .filter((n) => !TESTING_PATTERN.test(n) && !EXCLUDED_SKILLS.includes(n))
         .join(' · '),
     }))
     .filter((g) => g.items.length > 0),
@@ -285,7 +297,10 @@ export const defaultResume: ResumeDoc = {
       points: [],
     })),
 
-  note: 'Interactive work — a browser-based SQL engine, a pathfinding comparison, a BM25 search index and an assembler with its own VM, all built from scratch — is runnable at the /lab route of the portfolio.',
+  footer: [
+    { label: 'sahiltalaviya-portfolio.netlify.app', href: 'https://sahiltalaviya-portfolio.netlify.app' },
+    { label: site.phone, href: site.phoneHref },
+  ],
 };
 
 /** Deep copy, so an editor mutating its draft can never scribble on the module. */

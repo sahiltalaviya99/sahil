@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+
+import { automationCount } from '@/content/automations';
 import {
   AnimatePresence,
   motion,
@@ -214,7 +216,7 @@ export const SwipeDeck = () => {
 
 const CELLS = [
   { id: 'erp', label: 'ERP', body: 'Three internal systems, built end to end.' },
-  { id: 'auto', label: 'Automation', body: 'Seven n8n workflows in production.' },
+  { id: 'auto', label: 'Automation', body: `${automationCount} n8n agents in production.` },
   { id: 'web', label: 'Web', body: 'Front end, API, database, deployment.' },
   { id: 'ai', label: 'AI', body: 'Retrieval, generation, evaluation.' },
 ];

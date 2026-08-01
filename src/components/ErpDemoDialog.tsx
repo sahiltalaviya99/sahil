@@ -219,11 +219,16 @@ export const ErpDemoDialog = ({
 
   return (
     <Dialog open={open && !!demo} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92svh] w-[min(96vw,72rem)] max-w-none overflow-y-auto rounded-2xl border-border bg-elevated p-0">
+      {/* A flex column whose *body* scrolls, not the whole dialog. When the
+          DialogContent itself was the scroller, the close button — absolutely
+          positioned against it — scrolled up out of view with the header, so a
+          reader partway down the ERP demo had no way out. `gap-0` and `flex`
+          override the base grid layout via tailwind-merge. */}
+      <DialogContent className="flex max-h-[92svh] w-[min(96vw,72rem)] max-w-none flex-col gap-0 overflow-hidden rounded-2xl border-border bg-elevated p-0">
         {demo && (
           <>
             {/* Header */}
-            <div className="sticky top-0 z-10 border-b border-border bg-elevated/95 px-4 py-3.5 backdrop-blur sm:px-5">
+            <div className="shrink-0 border-b border-border bg-elevated/95 px-4 py-3.5 backdrop-blur sm:px-5">
               <div className="flex flex-wrap items-center justify-between gap-3 pr-8">
                 <div className="min-w-0">
                   <DialogTitle className="truncate font-display text-base font-bold tracking-tight sm:text-lg">
@@ -241,10 +246,15 @@ export const ErpDemoDialog = ({
               </div>
             </div>
 
-            <DemoBody demo={demo} />
+            {/* The only scroller. `min-h-0` is required: a flex child's default
+                `min-height: auto` refuses to shrink below its content, so the
+                pane would grow past the dialog instead of scrolling inside it. */}
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+              <DemoBody demo={demo} />
+            </div>
 
             {/* Footer disclaimer — stated twice on purpose. */}
-            <div className="border-t border-border px-4 py-3 sm:px-5">
+            <div className="shrink-0 border-t border-border px-4 py-3 sm:px-5">
               <p className="text-[0.68rem] leading-relaxed text-muted-foreground">
                 Illustrative interface only. Every record shown is invented — no client, patient or
                 order data from the live system appears here. The production ERP is internal and

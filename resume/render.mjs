@@ -12,7 +12,14 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 import { defaultResume } from '@/content/resume';
-import { templateById } from '@/components/resume/template-registry';
+import { accentById, templateById } from '@/components/resume/template-registry';
 
 const template = templateById(process.env.RESUME_TEMPLATE || 'classic');
-process.stdout.write(renderToStaticMarkup(createElement(template.Component, { doc: defaultResume })));
+/* Black and white unless asked otherwise — the same default as the builder, and
+   for the same reason: this is the copy that gets forwarded and printed on
+   equipment nobody can see. `RESUME_ACCENT=emerald` (or any id in `accents`). */
+const accent = accentById(process.env.RESUME_ACCENT || 'mono').value;
+
+process.stdout.write(
+  renderToStaticMarkup(createElement(template.Component, { doc: defaultResume, accent })),
+);
