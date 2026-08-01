@@ -106,8 +106,8 @@
     <animate attributeName="opacity" from="0" to="1" dur="0.7s" begin="1.2s" fill="freeze" />
     <text class="stat" x="880" y="120">3</text>
     <text class="cap"  x="880" y="140">ERP SYSTEMS</text>
-    <text class="stat" x="984" y="120">7</text>
-    <text class="cap"  x="984" y="140">AUTOMATIONS</text>
+    <text class="stat" x="975" y="120">60+</text>
+    <text class="cap"  x="975" y="140">AI AGENTS</text>
     <text class="stat" x="1096" y="120">18</text>
     <text class="cap"  x="1096" y="140">LAB EXHIBITS</text>
   </g>

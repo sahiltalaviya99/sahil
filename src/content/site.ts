@@ -1,5 +1,7 @@
 import { Github, Linkedin, Mail, FileText, type LucideIcon } from 'lucide-react';
 
+import { automationCount } from '@/content/automations';
+
 /**
  * Single source of truth for identity, navigation and contact.
  * Nothing here is duplicated in a component — if you need to change copy,
@@ -137,6 +139,6 @@ export const systemLayers = [
  */
 export const stats = [
   { value: 3, suffix: '', label: 'Enterprise ERP systems built end to end' },
-  { value: 7, suffix: '', label: 'AI automation workflows in production' },
+  { value: automationCount, suffix: '', label: 'AI automation agents in production' },
   { value: 15, suffix: '+', label: 'Projects shipped across web and automation' },
 ];

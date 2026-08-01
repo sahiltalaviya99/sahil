@@ -1,3 +1,4 @@
+import { automationCount, automationDepartmentCount, automationGroups } from '@/content/automations';
 import { experience } from '@/content/experience';
 import { projects } from '@/content/projects';
 import { site, socials } from '@/content/site';
@@ -250,9 +251,11 @@ export const defaultResume: ResumeDoc = {
     },
     {
       id: 'automation-suite',
-      title: 'HR, Sales & Marketing Automation Suite',
+      title: project('automation-suite').title,
       meta: projectMeta('automation-suite'),
-      body: 'Seven connected n8n workflows forming an operational backbone rather than one tool: sheet-triggered estimates and invoices through Zoho Books, an HR inbox agent that classifies mail and replies to candidates with matching openings, job posts fanned out to email and social, probation reviews scheduled automatically, and HR documents generated from maintained templates.',
+      body: `${automationCount}+ n8n agents across ${automationDepartmentCount} departments — ${automationGroups
+        .map((g) => g.department)
+        .join(', ')} — forming an operational backbone rather than a set of scripts. Hiring from job post through to offer letter, lead qualification including voice agents, content generation across seven brand properties, CI/CD triage, and the recurring reporting that used to be done by hand. The HR set is entirely my own design and build.`,
       stack: 'n8n · Zoho Books · Google Workspace APIs · Brevo',
     },
     {
