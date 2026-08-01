@@ -42,3 +42,12 @@ export const safeSet = (key: string, value: string, kind: Kind = 'session'): voi
     /* Preference simply doesn't persist — not worth surfacing. */
   }
 };
+
+export const safeRemove = (key: string, kind: Kind = 'session'): void => {
+  try {
+    store(kind)?.removeItem(key);
+  } catch {
+    /* Nothing was stored, or storage is blocked. Either way there is nothing
+       left to clear, which is the outcome the caller wanted. */
+  }
+};
