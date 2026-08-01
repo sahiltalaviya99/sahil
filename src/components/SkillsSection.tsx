@@ -9,8 +9,10 @@ import {
   levelValue,
   skillGroups,
   strengths,
+  type SkillGroup,
 } from '@/content/skills';
 import { viewportOnce, easeOutExpo } from '@/lib/motion';
+import { useSpotlight } from '@/hooks/use-spotlight';
 
 /** Proficiency bar — this is what the old `level` / `levelMap` data was for. */
 const ProficiencyBar = ({ name, value, level }: { name: string; value: number; level: string }) => {
@@ -42,6 +44,32 @@ const ProficiencyBar = ({ name, value, level }: { name: string; value: number; l
         />
       </div>
     </div>
+  );
+};
+
+/** One capability group. Split out so it can own a spotlight hook. */
+const GroupCard = ({ group }: { group: SkillGroup }) => {
+  const spotlight = useSpotlight();
+
+  return (
+    <StaggerItem variant="fade-up" as="article" className="min-w-0">
+      <div {...spotlight} className="surface-interactive spotlight h-full min-w-0 p-5">
+        <h3 className="font-display font-semibold tracking-tight">{group.label}</h3>
+        <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{group.blurb}</p>
+
+        <ul className="mt-4 flex flex-wrap gap-1.5">
+          {group.skills.map((s) => (
+            <li
+              key={s.name}
+              className="rounded-md border border-border/70 bg-elevated/60 px-2 py-1 text-xs text-foreground/85 transition-colors duration-300 hover:border-primary/40 hover:text-primary"
+              title={s.level}
+            >
+              {s.name}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </StaggerItem>
   );
 };
 
@@ -78,29 +106,7 @@ const SkillsSection = () => (
             className="grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(min(100%,16rem),1fr))]"
           >
             {skillGroups.map((group) => (
-              <StaggerItem
-                key={group.id}
-                variant="fade-up"
-                as="article"
-                className="surface-interactive min-w-0 p-5"
-              >
-                <h3 className="font-display font-semibold tracking-tight">{group.label}</h3>
-                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-                  {group.blurb}
-                </p>
-
-                <ul className="mt-4 flex flex-wrap gap-1.5">
-                  {group.skills.map((s) => (
-                    <li
-                      key={s.name}
-                      className="rounded-md border border-border/70 bg-elevated/60 px-2 py-1 text-xs text-foreground/85"
-                      title={s.level}
-                    >
-                      {s.name}
-                    </li>
-                  ))}
-                </ul>
-              </StaggerItem>
+              <GroupCard key={group.id} group={group} />
             ))}
           </Stagger>
         </div>

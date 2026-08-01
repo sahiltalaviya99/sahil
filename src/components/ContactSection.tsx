@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, Copy } from 'lucide-react';
+import { Check, Copy, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
@@ -8,26 +8,38 @@ import { site, socials } from '@/content/site';
 
 const ContactSection = () => {
   const [copied, setCopied] = useState(false);
+  const [copiedPhone, setCopiedPhone] = useState(false);
 
-  const copyEmail = async () => {
+  /**
+   * Clipboard access is blocked outright in some contexts (insecure origin,
+   * denied permission), so every caller needs a fallback that still gets the
+   * visitor where they were going rather than failing silently.
+   */
+  const copy = async (
+    value: string,
+    label: string,
+    mark: (v: boolean) => void,
+    fallbackHref: string,
+  ) => {
     try {
-      await navigator.clipboard.writeText(site.email);
-      setCopied(true);
-      toast.success('Email copied to clipboard');
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(value);
+      mark(true);
+      toast.success(`${label} copied to clipboard`);
+      setTimeout(() => mark(false), 2000);
     } catch {
-      // Clipboard is blocked in some contexts (insecure origin, permissions) —
-      // fall back to just opening the mail client rather than failing silently.
-      toast.error('Could not copy — opening your mail app instead');
-      window.location.href = `mailto:${site.email}`;
+      toast.error(`Could not copy — opening ${label.toLowerCase()} instead`);
+      window.location.href = fallbackHref;
     }
   };
+
+  const copyEmail = () => copy(site.email, 'Email', setCopied, `mailto:${site.email}`);
+  const copyPhone = () => copy(site.phone, 'Number', setCopiedPhone, site.phoneHref);
 
   return (
     <section id="contact" className="section-y relative">
       <div className="section-shell">
         <SectionHeading
-          index="05"
+          index="07"
           eyebrow="Contact"
           title={
             <>
@@ -72,6 +84,41 @@ const ContactSection = () => {
                   <>
                     <Copy className="h-4 w-4" />
                     Copy address
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* --- Phone, under the same roof as the email --------------- */}
+            <div className="relative mt-8 flex flex-col gap-4 border-t border-border/70 pt-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
+                <p className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-muted-foreground">
+                  Or call
+                </p>
+                <a
+                  href={site.phoneHref}
+                  className="mt-2 flex items-center gap-2.5 font-display text-[clamp(1.05rem,3vw,1.6rem)] font-bold tracking-tight transition-colors hover:text-primary"
+                >
+                  <Phone className="h-4 w-4 shrink-0 text-primary" />
+                  {/* tabular-nums so the digits are evenly set. */}
+                  <span className="tabular-nums">{site.phone}</span>
+                </a>
+              </div>
+
+              <button
+                onClick={copyPhone}
+                className="btn-ghost shrink-0 self-start sm:self-auto"
+                aria-label="Copy phone number"
+              >
+                {copiedPhone ? (
+                  <>
+                    <Check className="h-4 w-4 text-primary" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4" />
+                    Copy number
                   </>
                 )}
               </button>

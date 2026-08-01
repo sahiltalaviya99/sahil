@@ -1,11 +1,9 @@
 import { useRef } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 
-import CountUp from '@/components/reactbits/CountUp';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
 import { SectionHeading } from '@/components/ui-kit/SectionHeading';
 import { SystemStack } from '@/components/ui-kit/SystemStack';
-import { stats } from '@/content/site';
 
 const paragraphs = [
   <>
@@ -74,22 +72,8 @@ const AboutSection = () => {
               ))}
             </Stagger>
 
-            {/* Stats — every figure derives from the project/experience data. */}
-            <Stagger
-              stagger={0.1}
-              delayChildren={0.15}
-              className="mt-12 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border xs:grid-cols-3"
-            >
-              {stats.map((s) => (
-                <StaggerItem key={s.label} variant="fade-up" className="bg-surface p-5 sm:p-6">
-                  <div className="font-display text-4xl font-bold tracking-tight text-primary sm:text-5xl">
-                    <CountUp to={s.value} duration={1.6} />
-                    {s.suffix}
-                  </div>
-                  <p className="mt-2 text-sm leading-snug text-muted-foreground">{s.label}</p>
-                </StaggerItem>
-              ))}
-            </Stagger>
+            {/* Note: the headline stats live in the hero now. Repeating them
+                here would be the same three numbers twice in one scroll. */}
           </div>
 
           {/* --- System stack -------------------------------------------

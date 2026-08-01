@@ -178,6 +178,44 @@
     @apply border border-white/[0.06] bg-surface/70 backdrop-blur-xl;
   }
 
+  /*
+    Film grain. An SVG feTurbulence baked into a data URI — no image request,
+    no canvas, and it tiles seamlessly. Very low opacity on purpose: it should
+    register as texture, never as noise.
+  */
+  .grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity: 0.035;
+  }
+
+  /*
+    Pointer-tracking spotlight. --mx/--my are written by useSpotlight on
+    pointermove; the gradient follows the cursor across the card. Painted in a
+    pseudo-element so it sits under the content and never intercepts clicks.
+  */
+  .spotlight {
+    position: relative;
+    isolation: isolate;
+  }
+  .spotlight::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      16rem circle at var(--mx, 50%) var(--my, 50%),
+      hsl(var(--primary) / 0.13),
+      transparent 62%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .spotlight:hover::before {
+    opacity: 1;
+  }
+
   .hairline {
     @apply h-px w-full bg-gradient-to-r from-transparent via-border to-transparent;
   }

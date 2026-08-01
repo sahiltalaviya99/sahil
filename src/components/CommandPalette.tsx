@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   ArrowRight,
@@ -20,7 +21,7 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from '@/components/ui/command';
-import { SECTIONS, site, socials } from '@/content/site';
+import { ROUTES, SECTIONS, site, socials } from '@/content/site';
 import { projects } from '@/content/projects';
 import { useScrollToSection } from '@/hooks/use-section-nav';
 import { COMMAND_PALETTE_EVENT } from '@/lib/command-palette';
@@ -39,6 +40,7 @@ import { COMMAND_PALETTE_EVENT } from '@/lib/command-palette';
 export const CommandPalette = () => {
   const [open, setOpen] = useState(false);
   const scrollTo = useScrollToSection();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -96,6 +98,18 @@ export const CommandPalette = () => {
               <ArrowRight className="mr-2 h-4 w-4 text-primary" />
               <span>{s.label}</span>
               <CommandShortcut>{String(i + 1).padStart(2, '0')}</CommandShortcut>
+            </CommandItem>
+          ))}
+
+          {ROUTES.map((r) => (
+            <CommandItem
+              key={r.path}
+              value={`go ${r.label} ${r.path} terminal playground demos`}
+              onSelect={() => run(() => navigate(r.path))}
+            >
+              <ArrowRight className="mr-2 h-4 w-4 text-primary" />
+              <span>{r.label}</span>
+              <CommandShortcut>page</CommandShortcut>
             </CommandItem>
           ))}
         </CommandGroup>

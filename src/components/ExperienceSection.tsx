@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { forwardRef, useRef, useState } from 'react';
 import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion';
 import { Briefcase, GraduationCap } from 'lucide-react';
 
@@ -12,12 +12,25 @@ import {
 } from '@/content/experience';
 import { cn } from '@/lib/utils';
 import { easeOutExpo } from '@/lib/motion';
+import { useSpotlight } from '@/hooks/use-spotlight';
 
-const TimelineEntry = ({ entry }: { entry: Entry }) => {
+/**
+ * `forwardRef` is required, not stylistic.
+ *
+ * The list below is an `AnimatePresence mode="popLayout"`, and popLayout works
+ * by wrapping each child in framer's `PopChild`, which measures the exiting
+ * element so the survivors can animate into its place — it needs a ref to do
+ * that. A plain function component silently swallows the ref, so React logs
+ * "Function components cannot be given refs. Check the render method of
+ * PopChild" and the exit measurement is wrong.
+ */
+const TimelineEntry = forwardRef<HTMLLIElement, { entry: Entry }>(({ entry }, ref) => {
   const Icon = entry.type === 'work' ? Briefcase : GraduationCap;
+  const spotlight = useSpotlight();
 
   return (
     <motion.li
+      ref={ref}
       layout
       initial={{ opacity: 0, y: 28 }}
       animate={{ opacity: 1, y: 0 }}
@@ -37,7 +50,7 @@ const TimelineEntry = ({ entry }: { entry: Entry }) => {
         <Icon className="h-4 w-4 sm:h-[1.1rem] sm:w-[1.1rem]" />
       </span>
 
-      <div className="surface-interactive p-5 sm:p-7">
+      <div {...spotlight} className="surface-interactive spotlight p-5 sm:p-7">
         <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
           <div className="min-w-0">
             <h3 className="font-display text-lg font-semibold tracking-tight sm:text-xl">
@@ -76,7 +89,11 @@ const TimelineEntry = ({ entry }: { entry: Entry }) => {
       </div>
     </motion.li>
   );
-};
+});
+
+// forwardRef components have no inferred name, so React DevTools and any error
+// stack would otherwise show "Anonymous" exactly where you need the name.
+TimelineEntry.displayName = 'TimelineEntry';
 
 const ExperienceSection = () => {
   const [filter, setFilter] = useState<ExperienceFilter>('all');
@@ -115,7 +132,7 @@ const ExperienceSection = () => {
                 aria-selected={filter === f.id}
                 onClick={() => setFilter(f.id)}
                 className={cn(
-                  'relative rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300',
+                  'relative min-h-11 rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300 sm:min-h-0',
                   filter === f.id
                     ? 'text-primary-foreground'
                     : 'text-muted-foreground hover:text-foreground',

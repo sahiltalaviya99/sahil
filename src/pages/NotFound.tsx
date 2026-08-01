@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 
-import { Backdrop } from '@/components/ui-kit/Backdrop';
 import { site } from '@/content/site';
 import { easeOutExpo } from '@/lib/motion';
 
@@ -14,11 +13,9 @@ const NotFound = () => {
     console.error('404: no route for', location.pathname);
   }, [location.pathname]);
 
+  // Backdrop, navbar and footer come from SiteChrome.
   return (
-    <>
-      <Backdrop />
-
-      <main className="grid min-h-[100svh] place-items-center px-5 py-20">
+    <main className="grid min-h-[100svh] place-items-center px-5 py-20">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -44,9 +41,8 @@ const NotFound = () => {
             <ArrowLeft className="h-4 w-4" />
             Back to {site.shortName}’s portfolio
           </Link>
-        </motion.div>
-      </main>
-    </>
+      </motion.div>
+    </main>
   );
 };
 

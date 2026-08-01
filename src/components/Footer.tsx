@@ -1,8 +1,9 @@
+import { Link } from 'react-router-dom';
 import { ArrowUp } from 'lucide-react';
 
 import { Reveal } from '@/components/motion/Reveal';
 import { Marquee } from '@/components/ui-kit/Marquee';
-import { SECTIONS, site, socials } from '@/content/site';
+import { ROUTES, SECTIONS, site, socials } from '@/content/site';
 import { useScrollToSection } from '@/hooks/use-section-nav';
 
 const Footer = () => {
@@ -59,6 +60,16 @@ const Footer = () => {
                   >
                     {s.label}
                   </button>
+                </li>
+              ))}
+              {ROUTES.map((r) => (
+                <li key={r.path}>
+                  <Link
+                    to={r.path}
+                    className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                  >
+                    {r.label}
+                  </Link>
                 </li>
               ))}
             </ul>

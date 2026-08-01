@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useLenis } from 'lenis/react';
 import { SECTIONS, type SectionId } from '@/content/site';
 
@@ -11,12 +12,23 @@ const NAV_OFFSET = -88;
  * Replaces two separate hand-rolled implementations: the document-level anchor
  * click handler that used to live in Index.tsx and a duplicate window.scrollTo
  * in Navbar.tsx. Both are gone.
+ *
+ * Sections only exist on the home route, so calling this from /lab (the navbar,
+ * the footer sitemap, the terminal's `open` command) has to route home first
+ * and scroll on arrival — Index picks the target back up from the hash.
  */
 export const useScrollToSection = () => {
   const lenis = useLenis();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   return useCallback(
     (id: SectionId | string) => {
+      if (pathname !== '/') {
+        navigate(`/#${id}`);
+        return;
+      }
+
       const target = document.getElementById(id);
       if (!target) return;
 
@@ -29,8 +41,48 @@ export const useScrollToSection = () => {
 
       history.replaceState(null, '', `#${id}`);
     },
+    [lenis, navigate, pathname],
+  );
+};
+
+/**
+ * Scrolls an element on the *current* page below the nav. No routing, no hash.
+ *
+ * Exists for the exhibit switchers on /lab and /motion. Swapping a tall exhibit
+ * for a short one shrinks the document, the browser clamps scrollTop to the new
+ * maximum, and you are silently dumped at the footer — having clicked something
+ * you can no longer see. Anchoring back to the top of the switcher makes the
+ * landing position deterministic instead of a function of what you just left.
+ */
+export const useScrollToElement = () => {
+  const lenis = useLenis();
+
+  return useCallback(
+    (el: HTMLElement | null) => {
+      if (!el) return;
+      if (lenis) lenis.scrollTo(el, { offset: NAV_OFFSET, duration: 0.7 });
+      else window.scrollTo({ top: el.offsetTop + NAV_OFFSET, behavior: 'smooth' });
+    },
     [lenis],
   );
+};
+
+/**
+ * On the home route, consume a `/#section` hash left by a cross-route jump.
+ *
+ * Runs after a frame: the sections have to be laid out before Lenis can be
+ * told where to go, and on a fresh route render they aren't yet.
+ */
+export const useHashLanding = () => {
+  const { hash } = useLocation();
+  const scrollTo = useScrollToSection();
+
+  useEffect(() => {
+    const id = hash.replace(/^#/, '');
+    if (!id || !document.getElementById(id)) return;
+    const raf = requestAnimationFrame(() => scrollTo(id));
+    return () => cancelAnimationFrame(raf);
+  }, [hash, scrollTo]);
 };
 
 /**

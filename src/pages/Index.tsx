@@ -1,16 +1,14 @@
 import { useEffect } from 'react';
 
-import Navbar from '@/components/Navbar';
-import { CommandPalette } from '@/components/CommandPalette';
 import HeroSection from '@/components/HeroSection';
 import AboutSection from '@/components/AboutSection';
 import ExperienceSection from '@/components/ExperienceSection';
 import ProjectsSection from '@/components/ProjectsSection';
 import SkillsSection from '@/components/SkillsSection';
 import ContactSection from '@/components/ContactSection';
-import Footer from '@/components/Footer';
-import { Backdrop } from '@/components/ui-kit/Backdrop';
+import { LabTeaser } from '@/components/LabTeaser';
 import { site } from '@/content/site';
+import { useHashLanding } from '@/hooks/use-section-nav';
 
 /**
  * Section order here must match SECTIONS in src/content/site.ts — that array
@@ -20,29 +18,28 @@ import { site } from '@/content/site';
  * Lenis (src/App.tsx) and navigation goes through useScrollToSection.
  */
 const Index = () => {
+  // Consumes the /#section hash left behind when something on /lab (navbar,
+  // footer sitemap, terminal `open`) jumps back to a section on this page.
+  useHashLanding();
+
   useEffect(() => {
     document.title = `${site.name} — ${site.role}`;
   }, []);
 
+  // The navbar, footer, backdrop, cursor and ⌘K palette are in SiteChrome — a
+  // layout route — so they survive navigation to /lab and /motion instead of
+  // being torn down and rebuilt, which read as a full page reload.
   return (
-    <>
-      <Backdrop />
-      <Navbar />
-      {/* Mounted here rather than inside Navbar so the ⌘K listener survives
-          independently of the header. */}
-      <CommandPalette />
-
-      <main>
-        <HeroSection />
-        <AboutSection />
-        <ExperienceSection />
-        <ProjectsSection />
-        <SkillsSection />
-        <ContactSection />
-      </main>
-
-      <Footer />
-    </>
+    <main>
+      <HeroSection />
+      <AboutSection />
+      <ExperienceSection />
+      <ProjectsSection />
+      <SkillsSection />
+      {/* The interactive work lives at /lab now — this is the doorway to it. */}
+      <LabTeaser />
+      <ContactSection />
+    </main>
   );
 };
 

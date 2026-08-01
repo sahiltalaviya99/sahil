@@ -7,6 +7,13 @@ import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
 
 import App from './App.tsx';
+import { ErrorBoundary } from './components/ErrorBoundary.tsx';
 import './index.css';
 
-createRoot(document.getElementById('root')!).render(<App />);
+// Outside <App /> deliberately: it has to survive a throw from anything inside,
+// including the providers.
+createRoot(document.getElementById('root')!).render(
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>,
+);

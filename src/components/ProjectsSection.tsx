@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
-import { ArrowUpRight, ChevronDown, ExternalLink, Plus } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, ExternalLink, MonitorPlay, Plus } from 'lucide-react';
 
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/Reveal';
 import { SectionHeading } from '@/components/ui-kit/SectionHeading';
 import { Monogram } from '@/components/ui-kit/Monogram';
+import { ErpDemoDialog } from '@/components/ErpDemoDialog';
+import { demoFor } from '@/content/erp-demo';
 import {
   Dialog,
   DialogContent,
@@ -22,6 +24,7 @@ import {
 } from '@/content/projects';
 import { cn } from '@/lib/utils';
 import { easeOutExpo } from '@/lib/motion';
+import { useSpotlight } from '@/hooks/use-spotlight';
 
 const featured = projects.filter((p) => p.featured);
 const rest = projects.filter((p) => !p.featured);
@@ -66,11 +69,13 @@ const StackCard = ({
   index,
   total,
   onOpen,
+  onDemo,
 }: {
   project: Project;
   index: number;
   total: number;
   onOpen: () => void;
+  onDemo: () => void;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
@@ -141,10 +146,26 @@ const StackCard = ({
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <button onClick={onOpen} className="btn-primary text-sm">
-                Case detail
-                <Plus className="h-4 w-4" />
-              </button>
+              {/* The ERPs have no public URL, so an interactive demo stands in
+                  for the "visit live" link the client products get. */}
+              {demoFor(project.id) ? (
+                <button onClick={onDemo} className="btn-primary text-sm">
+                  Open demo
+                  <MonitorPlay className="h-4 w-4" />
+                </button>
+              ) : (
+                <button onClick={onOpen} className="btn-primary text-sm">
+                  Case detail
+                  <Plus className="h-4 w-4" />
+                </button>
+              )}
+
+              {demoFor(project.id) && (
+                <button onClick={onOpen} className="btn-ghost text-sm">
+                  Case detail
+                  <Plus className="h-3.5 w-3.5" />
+                </button>
+              )}
 
               {project.demo ? (
                 <a
@@ -171,11 +192,15 @@ const StackCard = ({
 /*  Remaining work — compact grid                                             */
 /* -------------------------------------------------------------------------- */
 
-const CompactCard = ({ project, onOpen }: { project: Project; onOpen: () => void }) => (
+const CompactCard = ({ project, onOpen }: { project: Project; onOpen: () => void }) => {
+  const spotlight = useSpotlight();
+
+  return (
   <StaggerItem variant="fade-up" as="article" className="min-w-0">
     <button
       onClick={onOpen}
-      className="surface-interactive group flex h-full w-full flex-col p-5 text-left sm:p-6"
+      {...spotlight}
+      className="surface-interactive spotlight group flex h-full w-full flex-col p-5 text-left sm:p-6"
     >
       <div className="flex items-start justify-between gap-4">
         <h3 className="font-display text-lg font-semibold leading-snug tracking-tight">
@@ -206,7 +231,8 @@ const CompactCard = ({ project, onOpen }: { project: Project; onOpen: () => void
       </div>
     </button>
   </StaggerItem>
-);
+  );
+};
 
 /* -------------------------------------------------------------------------- */
 
@@ -214,6 +240,7 @@ const ProjectsSection = () => {
   const [filter, setFilter] = useState<ProjectFilter>('all');
   const [showAll, setShowAll] = useState(false);
   const [active, setActive] = useState<Project | null>(null);
+  const [demoId, setDemoId] = useState<string | null>(null);
 
   const matching = rest.filter((p) => filter === 'all' || p.kind === filter);
   const visible = showAll ? matching : matching.slice(0, PREVIEW_COUNT);
@@ -240,6 +267,7 @@ const ProjectsSection = () => {
               index={i}
               total={featured.length}
               onOpen={() => setActive(p)}
+              onDemo={() => setDemoId(p.id)}
             />
           ))}
         </div>
@@ -265,7 +293,7 @@ const ProjectsSection = () => {
                   }}
                   aria-pressed={filter === f.id}
                   className={cn(
-                    'relative rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors duration-300 sm:text-sm',
+                    'relative min-h-11 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors duration-300 sm:min-h-0 sm:text-sm',
                     filter === f.id
                       ? 'text-primary-foreground'
                       : 'text-muted-foreground hover:text-foreground',
@@ -406,6 +434,19 @@ const ProjectsSection = () => {
                   ))}
                 </div>
 
+                {demoFor(active.id) && (
+                  <button
+                    onClick={() => {
+                      setActive(null);
+                      setDemoId(active.id);
+                    }}
+                    className="btn-primary mt-7 w-full sm:w-auto"
+                  >
+                    Open interactive demo
+                    <MonitorPlay className="h-4 w-4" />
+                  </button>
+                )}
+
                 {active.demo && (
                   <motion.a
                     href={active.demo}
@@ -425,6 +466,12 @@ const ProjectsSection = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      <ErpDemoDialog
+        projectId={demoId}
+        open={!!demoId}
+        onOpenChange={(open) => !open && setDemoId(null)}
+      />
     </section>
   );
 };

@@ -31,6 +31,9 @@ export const Backdrop = ({ className }: { className?: string }) => (
       style={{ animationDelay: '-9s' }}
     />
 
+    {/* Film grain — texture, not noise. */}
+    <div className="absolute inset-0 grain" />
+
     {/* Vignette so the content column always reads against something calm. */}
     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,hsl(var(--background))_100%)]" />
   </div>
