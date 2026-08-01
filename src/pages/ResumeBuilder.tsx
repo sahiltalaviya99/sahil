@@ -9,20 +9,27 @@ import {
   type ContactItem,
   type ResumeDoc,
 } from '@/content/resume';
-import { templateById, templates, type TemplateId } from '@/components/resume/template-registry';
+import {
+  accentById,
+  accents,
+  templateById,
+  templates,
+  type TemplateId,
+} from '@/components/resume/template-registry';
 import { safeGet, safeRemove, safeSet } from '@/lib/safe-storage';
 import { cn } from '@/lib/utils';
 import '@/components/resume/resume.css';
 
 /**
- * A private résumé editor at an unlisted route.
+ * The résumé editor.
  *
- * **Deliberately absent from `ROUTES`, the footer sitemap and the ⌘K palette.**
- * It is reachable only by typing the path. That is the whole point — this is
- * Sahil's tool, not a page of the portfolio, and a visitor stumbling into an
- * editor for the owner's CV would be confused at best.
+ * **Absent from `ROUTES`, the footer sitemap and the ⌘K palette** — the single
+ * link to it is hand-placed at the bottom of Footer.tsx, so it stays out of the
+ * main navigation. Nothing of Sahil's is at risk from it being reachable: the
+ * document is seeded from `src/content/resume.ts` and a visitor's edits live in
+ * their own browser's localStorage.
  *
- * It is also mounted *outside* `SiteChrome`, so there is no navbar, footer,
+ * It is mounted *outside* `SiteChrome`, so there is no navbar, footer,
  * preloader or custom cursor here. A full-screen tool should not wear the
  * site's furniture, and none of it would survive `window.print()` anyway.
  *
@@ -35,6 +42,7 @@ import '@/components/resume/resume.css';
 
 const DRAFT_KEY = 'resume-draft';
 const TEMPLATE_KEY = 'resume-template';
+const ACCENT_KEY = 'resume-accent';
 /** 210mm at 96dpi — the sheet's fixed width, used to scale the preview. */
 const SHEET_PX = (210 / 25.4) * 96;
 
@@ -71,6 +79,11 @@ const loadDraft = (): ResumeDoc => {
     const merged = { ...cloneResume(defaultResume), ...parsed } as ResumeDoc;
     const contacts = normalizeContacts(parsed.contactLines);
     if (contacts) merged.contactLines = contacts;
+    /* The closing line used to be a `note` string. A draft saved then carries no
+       `footer`, and the spread would leave the default in place — correct — but
+       a draft saved *after* the rename with an emptied footer must stay empty,
+       so only normalise when the key is actually present. */
+    if ('footer' in parsed) merged.footer = normalizeContacts([parsed.footer])?.[0] ?? [];
     return merged;
   } catch {
     return cloneResume(defaultResume);
@@ -252,9 +265,11 @@ const ResumeBuilder = () => {
   const [templateId, setTemplateId] = useState<TemplateId>(
     () => (safeGet(TEMPLATE_KEY, 'local') as TemplateId) || 'classic',
   );
+  const [accentId, setAccentId] = useState<string>(() => safeGet(ACCENT_KEY, 'local') || 'mono');
   const [pane, setPane] = useState<'edit' | 'preview'>('edit');
 
   const template = templateById(templateId);
+  const accent = accentById(accentId).value;
   const Sheet = template.Component;
 
   /* The filename Chrome offers in its Save-as-PDF dialog is the document title,
@@ -277,6 +292,10 @@ const ResumeBuilder = () => {
   useEffect(() => {
     safeSet(TEMPLATE_KEY, templateId, 'local');
   }, [templateId]);
+
+  useEffect(() => {
+    safeSet(ACCENT_KEY, accentId, 'local');
+  }, [accentId]);
 
   const patch = useCallback((fields: Partial<ResumeDoc>) => setDoc((d) => ({ ...d, ...fields })), []);
 
@@ -318,7 +337,7 @@ const ResumeBuilder = () => {
     ro.observe(frame);
     ro.observe(sheet);
     return () => ro.disconnect();
-  }, [templateId, doc]);
+  }, [templateId, accentId, doc]);
 
   /* ---------------------------------------------------------------------- */
 
@@ -346,7 +365,7 @@ const ResumeBuilder = () => {
             style={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: SHEET_PX }}
             className="shadow-2xl"
           >
-            <Sheet doc={doc} />
+            <Sheet doc={doc} accent={accent} />
           </div>
         </div>
       </div>
@@ -379,6 +398,32 @@ const ResumeBuilder = () => {
                   )}
                 >
                   {t.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Accent swatches. Black & white is first and is the default —
+                the mono chip shows the ink colour with a slash through it so it
+                reads as "no colour" rather than as a black accent. */}
+            <div className="flex items-center gap-1.5 rounded-full border border-border bg-surface p-1.5">
+              {accents.map((a) => (
+                <button
+                  key={a.id}
+                  onClick={() => setAccentId(a.id)}
+                  title={a.label}
+                  aria-label={a.label}
+                  aria-pressed={accentId === a.id}
+                  style={{ background: a.value ?? '#14171a' }}
+                  className={cn(
+                    'relative h-6 w-6 rounded-full ring-offset-2 ring-offset-surface transition-all',
+                    accentId === a.id ? 'ring-2 ring-primary' : 'ring-1 ring-white/15 hover:ring-white/40',
+                  )}
+                >
+                  {!a.value && (
+                    <span className="absolute inset-0 grid place-items-center text-[0.7rem] leading-none text-white/70">
+                      /
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
@@ -679,8 +724,22 @@ const ResumeBuilder = () => {
               ))}
             </Group>
 
-            <Group title="Footnote">
-              <Area label="Closing line" value={doc.note} rows={3} onChange={(note) => patch({ note })} />
+            <Group title="Closing line">
+              <Field
+                label="Footer"
+                hint={`${doc.footer.filter((x) => x.href).length} linked`}
+                placeholder="separate items with ·"
+                value={doc.footer.map((x) => x.label).join(' · ')}
+                onChange={(v) =>
+                  patch({
+                    footer: v
+                      .split('·')
+                      .map((t) => t.trim())
+                      .filter(Boolean)
+                      .map((label) => doc.footer.find((x) => x.label === label) ?? { label, href: hrefFor(label) }),
+                  })
+                }
+              />
             </Group>
           </div>
 
@@ -696,7 +755,7 @@ const ResumeBuilder = () => {
           bleed onto the page that way. */}
       {createPortal(
         <div className="resume-print-portal">
-          <Sheet doc={doc} />
+          <Sheet doc={doc} accent={accent} />
         </div>,
         document.body,
       )}

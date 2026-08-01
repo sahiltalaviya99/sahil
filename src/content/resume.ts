@@ -95,7 +95,13 @@ export type ResumeDoc = {
   projects: ResumeProject[];
   skills: ResumeSkillRow[];
   education: ResumeEntry[];
-  note: string;
+  /**
+   * The closing line. Contact details rather than prose, and typed as
+   * `ContactItem[]` so the portfolio URL and the phone number are *clickable* in
+   * the printed PDF — the last thing on the page should be a way to reach him,
+   * not a paragraph about the site's exhibits.
+   */
+  footer: ContactItem[];
 };
 
 /* -------------------------------------------------------------------------- */
@@ -144,6 +150,9 @@ const TESTING_PATTERN =
 
 /** Whole skill groups that must not appear. */
 const EXCLUDED_SKILL_GROUPS = ['testing'];
+
+/** Individual skills dropped from the résumé but kept on the site. */
+const EXCLUDED_SKILLS = ['Linux servers'];
 
 /**
  * Bullets where testing is a clause, not the point.
@@ -266,7 +275,7 @@ export const defaultResume: ResumeDoc = {
       // Individual test-related skills can sit in other groups too.
       items: g.skills
         .map((s) => s.name)
-        .filter((n) => !TESTING_PATTERN.test(n))
+        .filter((n) => !TESTING_PATTERN.test(n) && !EXCLUDED_SKILLS.includes(n))
         .join(' · '),
     }))
     .filter((g) => g.items.length > 0),
@@ -285,7 +294,10 @@ export const defaultResume: ResumeDoc = {
       points: [],
     })),
 
-  note: 'Interactive work — a browser-based SQL engine, a pathfinding comparison, a BM25 search index and an assembler with its own VM, all built from scratch — is runnable at the /lab route of the portfolio.',
+  footer: [
+    { label: 'sahiltalaviya-portfolio.netlify.app', href: 'https://sahiltalaviya-portfolio.netlify.app' },
+    { label: site.phone, href: site.phoneHref },
+  ],
 };
 
 /** Deep copy, so an editor mutating its draft can never scribble on the module. */

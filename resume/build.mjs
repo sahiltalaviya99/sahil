@@ -92,10 +92,13 @@ ${face('Inter Variable', 'node_modules/@fontsource-variable/inter/files/inter-la
 ${face('Space Grotesk Variable', 'node_modules/@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2')}
 ${css}
 /* The page IS the sheet here — there is no app to hide, so the print rule that
-   reveals the portal has nothing to act on. Show it unconditionally. */
+   reveals the portal has nothing to act on.
+
+   Deliberately no at-page override here: print-to-pdf renders in the print
+   media, so the margins declared in resume.css apply. An override at this point
+   wins on cascade order and reintroduces the zero-margin second page.
+   (No backticks in this comment — it sits inside a JS template literal.) */
 html, body { margin: 0; background: #fff; }
-@page { size: A4; margin: 0; }
-.resume-sheet { min-height: 0; }
 </style></head>
 <body>${body}</body></html>`;
 

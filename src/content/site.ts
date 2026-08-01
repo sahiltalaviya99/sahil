@@ -70,6 +70,17 @@ export const ROUTES = [
   { path: '/motion', label: 'Motion' },
 ] as const;
 
+/**
+ * The résumé builder.
+ *
+ * **Deliberately not in `ROUTES`.** Everything in that array is picked up by the
+ * navbar, the mobile drawer, the ⌘K palette *and* the footer sitemap; this page
+ * is linked from the footer only, by one hand-placed `<Link>` in Footer.tsx.
+ * Adding it to `ROUTES` would put an editor for the site owner's CV in the main
+ * navigation, which is not what it is for.
+ */
+export const RESUME_BUILDER_PATH = '/sahil9909657018';
+
 export type Social = {
   name: string;
   href: string;

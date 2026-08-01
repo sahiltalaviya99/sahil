@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 import type {
   ContactItem,
@@ -20,6 +20,9 @@ import type {
  *
  * Styling lives entirely in resume.css.
  */
+
+/** Every template takes the same two things: the document and the accent. */
+export type TemplateProps = { doc: ResumeDoc; accent?: string | null };
 
 /* -------------------------------------------------------------------------- */
 /*  Shared pieces                                                              */
@@ -75,6 +78,16 @@ const Header = ({ doc }: { doc: ResumeDoc }) => (
   </>
 );
 
+/** Closing line: portfolio and phone, both clickable in the PDF. */
+const Footer = ({ doc }: { doc: ResumeDoc }) =>
+  doc.footer?.length ? (
+    <p className="rs-note">
+      {doc.footer.map((item) => (
+        <Contact key={item.label} item={item} />
+      ))}
+    </p>
+  ) : null;
+
 const Section = ({ title, children }: { title: string; children: ReactNode }) => (
   <section className="rs-section">
     <h2 className="rs-h2">{title}</h2>
@@ -128,8 +141,29 @@ const Skills = ({ rows }: { rows: ResumeSkillRow[] }) => (
 /*  Single column — Classic and Compact differ only in type scale (resume.css) */
 /* -------------------------------------------------------------------------- */
 
-const SingleColumn = ({ doc, variant }: { doc: ResumeDoc; variant: string }) => (
-  <div className={`resume-sheet ${variant}`}>
+/**
+ * Sheet class + accent variable.
+ *
+ * `accent` is null by default and the sheet is black and white — see the note on
+ * `--resume-accent` in resume.css. Written out longhand rather than with the
+ * app's `cn` helper because this file must not import from the app: it is also
+ * rendered in Node by resume/build.mjs.
+ */
+const sheetProps = (variant: string, accent?: string | null) => ({
+  className: `resume-sheet ${variant}${accent ? '' : ' tone-mono'}`,
+  style: accent ? ({ '--resume-accent': accent } as CSSProperties) : undefined,
+});
+
+const SingleColumn = ({
+  doc,
+  variant,
+  accent,
+}: {
+  doc: ResumeDoc;
+  variant: string;
+  accent?: string | null;
+}) => (
+  <div {...sheetProps(variant, accent)}>
     <Header doc={doc} />
 
     {doc.profile ? (
@@ -146,17 +180,19 @@ const SingleColumn = ({ doc, variant }: { doc: ResumeDoc; variant: string }) => 
       </Section>
     )}
 
-    {doc.projects.length > 0 && (
-      <Section title="Selected Work">
-        {doc.projects.map((p) => (
-          <Project key={p.id} project={p} />
-        ))}
-      </Section>
-    )}
-
+    {/* Skills before projects: the stack is the first thing a reader is
+        scanning for, and it is four lines against the projects' twenty. */}
     {doc.skills.length > 0 && (
       <Section title="Technical Skills">
         <Skills rows={doc.skills} />
+      </Section>
+    )}
+
+    {doc.projects.length > 0 && (
+      <Section title="Projects">
+        {doc.projects.map((p) => (
+          <Project key={p.id} project={p} />
+        ))}
       </Section>
     )}
 
@@ -168,24 +204,24 @@ const SingleColumn = ({ doc, variant }: { doc: ResumeDoc; variant: string }) => 
       </Section>
     )}
 
-    {doc.note ? <p className="rs-note">{doc.note}</p> : null}
+    <Footer doc={doc} />
   </div>
 );
 
-export const Classic = ({ doc }: { doc: ResumeDoc }) => (
-  <SingleColumn doc={doc} variant="tpl-classic" />
+export const Classic = ({ doc, accent }: TemplateProps) => (
+  <SingleColumn doc={doc} accent={accent} variant="tpl-classic" />
 );
 
-export const Compact = ({ doc }: { doc: ResumeDoc }) => (
-  <SingleColumn doc={doc} variant="tpl-compact" />
+export const Compact = ({ doc, accent }: TemplateProps) => (
+  <SingleColumn doc={doc} accent={accent} variant="tpl-compact" />
 );
 
 /* -------------------------------------------------------------------------- */
 /*  Sidebar                                                                    */
 /* -------------------------------------------------------------------------- */
 
-export const Sidebar = ({ doc }: { doc: ResumeDoc }) => (
-  <div className="resume-sheet tpl-sidebar">
+export const Sidebar = ({ doc, accent }: TemplateProps) => (
+  <div {...sheetProps('tpl-sidebar', accent)}>
     <aside className="rs-rail">
       <header className="rs-header">
         <div className="rs-identity">
@@ -230,14 +266,14 @@ export const Sidebar = ({ doc }: { doc: ResumeDoc }) => (
       )}
 
       {doc.projects.length > 0 && (
-        <Section title="Selected Work">
+        <Section title="Projects">
           {doc.projects.map((p) => (
             <Project key={p.id} project={p} />
           ))}
         </Section>
       )}
 
-      {doc.note ? <p className="rs-note">{doc.note}</p> : null}
+      <Footer doc={doc} />
     </div>
   </div>
 );

@@ -3,7 +3,7 @@ import { ArrowUp } from 'lucide-react';
 
 import { Reveal } from '@/components/motion/Reveal';
 import { Marquee } from '@/components/ui-kit/Marquee';
-import { ROUTES, SECTIONS, site, socials } from '@/content/site';
+import { RESUME_BUILDER_PATH, ROUTES, SECTIONS, site, socials } from '@/content/site';
 import { useScrollToSection } from '@/hooks/use-section-nav';
 
 const Footer = () => {
@@ -104,9 +104,22 @@ const Footer = () => {
             © {year} {site.name}
           </p>
 
-          <p className="font-mono text-xs text-muted-foreground/70">
-            React · TypeScript · Tailwind · Framer Motion · Lenis
-          </p>
+          {/**
+           * The résumé builder.
+           *
+           * Its route stays out of `ROUTES` — this is the only link to it, so it
+           * shows up here and nowhere else: not in the navbar, not in the ⌘K
+           * palette, not in the sitemap column above. Note that linking it at
+           * all makes the editor publicly reachable; that is deliberate and was
+           * asked for. Nothing of Sahil's is exposed by it — a visitor's edits
+           * live in their own browser's localStorage and touch nothing here.
+           */}
+          <Link
+            to={RESUME_BUILDER_PATH}
+            className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground/60 transition-colors hover:text-primary"
+          >
+            Résumé builder
+          </Link>
 
           <button
             onClick={() => scrollTo('home')}
