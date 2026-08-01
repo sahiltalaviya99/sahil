@@ -1,61 +1,45 @@
-
 import { useEffect } from 'react';
-import { motion } from 'framer-motion';
-import Navbar from '../components/Navbar';
-import HeroSection from '../components/HeroSection';
-import AboutSection from '../components/AboutSection';
-import ProjectsSection from '../components/ProjectsSection';
-import SkillsSection from '../components/SkillsSection';
-import ExperienceSection from '../components/ExperienceSection';
-import ContactSection from '../components/ContactSection';
-import Footer from '../components/Footer';
 
+import HeroSection from '@/components/HeroSection';
+import AboutSection from '@/components/AboutSection';
+import ExperienceSection from '@/components/ExperienceSection';
+import ProjectsSection from '@/components/ProjectsSection';
+import SkillsSection from '@/components/SkillsSection';
+import ContactSection from '@/components/ContactSection';
+import { LabTeaser } from '@/components/LabTeaser';
+import { site } from '@/content/site';
+import { useHashLanding } from '@/hooks/use-section-nav';
+
+/**
+ * Section order here must match SECTIONS in src/content/site.ts — that array
+ * drives the navbar and the active-section observer.
+ *
+ * Note there is no anchor-click handler here any more. Smooth scrolling is
+ * Lenis (src/App.tsx) and navigation goes through useScrollToSection.
+ */
 const Index = () => {
-  // Set page title and implement smooth scrolling
+  // Consumes the /#section hash left behind when something on /lab (navbar,
+  // footer sitemap, terminal `open`) jumps back to a section on this page.
+  useHashLanding();
+
   useEffect(() => {
-    document.title = 'Sahil Talaviya | Frontend Developer';
-    
-    // Implement smooth scrolling for anchor links
-    const handleAnchorClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'A' && target.getAttribute('href')?.startsWith('#')) {
-        e.preventDefault();
-        const id = target.getAttribute('href')?.substring(1);
-        if (id) {
-          const element = document.getElementById(id);
-          if (element) {
-            window.scrollTo({
-              behavior: 'smooth',
-              top: element.offsetTop - 80 // Accounting for fixed header
-            });
-            
-            // Update URL without page reload
-            history.pushState(null, '', `#${id}`);
-          }
-        }
-      }
-    };
-    
-    document.addEventListener('click', handleAnchorClick);
-    return () => document.removeEventListener('click', handleAnchorClick);
+    document.title = `${site.name} — ${site.role}`;
   }, []);
 
+  // The navbar, footer, backdrop, cursor and ⌘K palette are in SiteChrome — a
+  // layout route — so they survive navigation to /lab and /motion instead of
+  // being torn down and rebuilt, which read as a full page reload.
   return (
-    <motion.div 
-      className="min-h-screen"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <Navbar />
+    <main>
       <HeroSection />
       <AboutSection />
       <ExperienceSection />
       <ProjectsSection />
       <SkillsSection />
+      {/* The interactive work lives at /lab now — this is the doorway to it. */}
+      <LabTeaser />
       <ContactSection />
-      <Footer />
-    </motion.div>
+    </main>
   );
 };
 

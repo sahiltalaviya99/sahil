@@ -1,0 +1,7 @@
+# SPA fallback. Without this, loading /lab directly (or refreshing on it) asks
+# the host for a file that doesn't exist and returns 404 — routing only works
+# client-side once index.html has booted.
+#
+# This is Netlify's format. Vercel's Vite preset adds the same rewrite itself;
+# on Apache use .htaccess, on nginx `try_files $uri /index.html`.
+/*  /index.html  200
